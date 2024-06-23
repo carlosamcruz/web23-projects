@@ -1,0 +1,125 @@
+    `
+    npm init -y
+
+    npm i -D typescript
+
+    npx tsc --init
+
+    npx tsc
+
+    `
+- script compile em package.json
+
+    `
+    npm run compile
+    `
+
+- script start em package.json
+
+    `
+    npm start
+    `
+
+- opcional:
+    `
+    npm i -D ts-node
+    npx ts-node ./src/blockchain.ts
+    `
+
+- script dev em package.json
+
+aula:
+"dev": "npx nodemon --watch './src/' --exec 'npx ts-node ./src/blockchain.ts' -e ts",
+
+funcional:
+"dev": "npx nodemon --watch ./src/ --exec npx ts-node ./src/blockchain.ts -e ts",
+
+    `
+    npm i -D nodemon
+    npm run dev
+    `
+
+- Jest para testes:
+
+    `
+    npm i -D jest ts-jest @types/jest
+    npx jest --init
+    `
+- Depois de escrever os testes:
+
+    `
+    npm test
+    `
+
+- Criptografia
+
+    `
+    npm i crypto-js
+    npm i -D @types/crypto-js
+    `
+
+- blockchain Server:
+
+    `
+    npm i express morgan
+    npm i -D @types/express @types/morgan
+    `
+- script blockchain em package.json
+
+    "blockchain": "ts-node ./src/server/blockchainServer.ts"
+    `
+    npm run blockchain
+    `
+- Usar o postman:
+    (revisar a instalação e uso do postman (Modulo 0, Lição 2, Tópico 4): https://cursos.luiztools.com.br/topico/04-instalando-o-postman/)
+    antes de testar outras implementações de funções no server, devemos derrubar e levantar o servidor novamente;
+
+- Supertest (M1 L3 A7):
+
+    `
+    npm i -D supertest @types/supertest
+    `
+- script blockchain em package.json
+    
+    "blockchain": "ts-node ./src/server/blockchainServer.ts"
+    "blockchain": "ts-node ./src/server/blockchainServer.ts --run"
+
+- Client Miner (M1 L4 A5 min 6 em diante):
+
+    `
+    npm i axios
+    `
+- script miner em package.json
+    
+    "miner": "ts-node ./src/client/minerClient.ts",
+
+    ***rodar blockchain em outro terminal;
+    
+    `
+    npm run miner
+    `
+- Variáveis de ambiente (M1 L4 A7 min 5 em diante):
+
+    `
+    npm i dotenv
+    `
+
+- Jest.cofig.ts
+
+    setupFiles:
+        setupFiles: ["dotenv/config"],
+
+    `
+    npm test
+    `
+- Jest.cofig.ts
+
+    coveragePathIgnorePatterns: [
+     "\\\\node_modules\\\\",
+     "/src/lib/blockInfo.ts",
+     "/src/lib/transactionType.ts"
+    ],
+
+    `
+    npm test
+    `
