@@ -4,12 +4,13 @@ dotenv.config();
 import axios from "axios";
 import BlockInfo from "../lib/blockInfo";
 import Block from "../lib/block";
+import Wallet from "../lib/wallet";
+import Transacion from "../lib/transaction";
+import TransacionType from "../lib/transactionType";
 
 const BLOCKCHAIN_SERVER = process.env.BLOCKCHAIN_SERVER;
-const minerWallet = {
-    privateKey: "123456",
-    publicKey: `${process.env.MINER_WALLET}`
-}
+const minerWallet = new Wallet(process.env.MINER_WALLET);
+
 console.log("Logged as: ", minerWallet.publicKey);
 
 let totalMined = 0;
@@ -31,7 +32,16 @@ async function mine(){
 
     const newBlock = Block.fromBlockInfo(blockinfo);
 
-    //TODO: Adicionar tx de recompensa;
+    //DONE: Adicionar tx de recompensa;
+    newBlock.transactions.push(new Transacion({
+        to: minerWallet.publicKey,
+        type: TransacionType.FEE
+    } as Transacion));
+
+    newBlock.miner = minerWallet.publicKey;
+    newBlock.hash = newBlock.getHash();
+    
+
 
     console.log("Start mining block #" + blockinfo.index);
 

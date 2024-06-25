@@ -131,3 +131,17 @@ funcional:
      "/src/lib/transactionType.ts",
      "/src/lib/transactionSearch.ts"
     ],
+
+- M1 L6 A3 Modulo ECDSA e secp256k1
+
+    `
+    npm i ecpair tiny-secp256k1
+    `
+
+    - script wallet em package.json
+    
+    "wallet": "ts-node ./src/client/walletClient.ts",
+
+    `
+    npm run wallet
+    `

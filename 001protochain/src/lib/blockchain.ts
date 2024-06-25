@@ -4,6 +4,7 @@ import BlockInfo from "./blockInfo";
 import Transacion from "./transaction";
 import TransacionType from "./transactionType";
 import TransactionSearch from "./transactionSearch";
+import TransactionInput from "./__mocks__/transactionInput";
 
 /**
  * Blockchain class
@@ -32,7 +33,8 @@ export default class Blockchain{
                 transactions: [ new Transacion(
                     {
                         type: TransacionType.FEE,
-                        data: (new Date).toString()
+                        //data: (new Date).toString()
+                        txInput: new TransactionInput()
                     } as Transacion)]
             } as Block
         )];
@@ -52,7 +54,7 @@ export default class Blockchain{
      * @returns 
      */
     getDifficulty(): number{
-        return Math.ceil(this.blocks.length / Blockchain.DIFFICULTY_FACTOR)  
+        return Math.ceil(this.blocks.length / Blockchain.DIFFICULTY_FACTOR) + 1;  
     }
 
     /**
@@ -85,6 +87,15 @@ export default class Blockchain{
      * @returns 
      */
     addTransaction(transaction: Transacion): Validation{
+        if(transaction.txInput){
+            const from = transaction.txInput.fromAddress;
+            //! é usado quando se tem certeza que vai encontrar a informação, e ? quando não temos certeza
+            const pendingTx = this.mempool.map(tx => tx.txInput).filter( txi => txi!.fromAddress === from);
+            if(pendingTx && pendingTx.length)
+                return new Validation(false, "This wallet has a pending TX.");
+
+            //TODO: verificar a origem dos fundos
+        }
         const validation = transaction.isValid();
 
         if(!validation.success)
@@ -95,8 +106,10 @@ export default class Blockchain{
         if(this.blocks.some(b => b.transactions.some(tx => tx.hash === transaction.hash)))
             return new Validation(false, "Duplicated tx in the blockchain.");
 
+        /*
         if(this.mempool.some(tx => tx.hash === transaction.hash))
             return new Validation(false, "Duplicated tx in the mempool.");
+        */
 
         
         this.mempool.push(transaction);
