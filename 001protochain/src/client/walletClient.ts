@@ -5,6 +5,7 @@ import axios from "axios";
 import Transacion from "../lib/transaction";
 import TransactionInput from "../lib/transactionInput";
 import TransacionType from "../lib/transactionType";
+import TransactionOutput from "../lib/transactionOutput";
 
 
 dotenv.config();
@@ -123,19 +124,34 @@ function sendTX(){
                 return preMenu();
             }
             
+            const walletResponse = await axios.get(`${BLOCKCHAIN_SERVER}wallets/${myWalletPub}`)
+            const balance = walletResponse.data.balance as number;
+            const fee = walletResponse.data.fee as number;
+            const utxo = walletResponse.data.utxo as TransactionOutput[];
+
             //TODO: Balance Validation;
+
+            if(balance < amount + fee){
+                console.log("No enough UTXOs.");
+                return preMenu();
+            }
 
             const tx = new Transacion();
             tx.timestamp = Date.now();
-            tx.to = toWallet;
+            tx.txOuputs = [new TransactionOutput({
+                toAddress: toWallet,
+                amount,
+            } as TransactionOutput)];
             tx.type = TransacionType.REGULAR;
-            tx.txInput = new TransactionInput({
+            tx.txInputs = [new TransactionInput({
                 fromAddress: myWalletPub,
-                amount: amount
-            } as TransactionInput);
+                amount: amount,
+                previousTx: utxo[0].tx
+            } as TransactionInput)];
 
-            tx.txInput.sign(myWalletPriv);
+            tx.txInputs[0].sign(myWalletPriv);
             tx.hash = tx.getHash();
+            tx.txOuputs[0].tx = tx.hash;
 
             try{
 

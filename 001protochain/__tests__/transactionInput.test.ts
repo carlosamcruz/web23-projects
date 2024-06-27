@@ -17,7 +17,7 @@ describe("Transaction Input tests", ()=> {
         const txInput = new TransactionInput({
             amount: 10,
             fromAddress: alice.publicKey,
-
+            previousTx: "abc"
         } as TransactionInput);
 
         txInput.sign(alice.privateKey);
@@ -44,7 +44,7 @@ describe("Transaction Input tests", ()=> {
         const txInput = new TransactionInput({
             amount: 10,
             fromAddress: alice.publicKey,
-
+            previousTx: "abc"
         } as TransactionInput)
 
         //txInput.sign(alice.privateKey);
@@ -59,7 +59,7 @@ describe("Transaction Input tests", ()=> {
         const txInput = new TransactionInput({
             amount: -10,
             fromAddress: alice.publicKey,
-
+            previousTx: "abc"
         } as TransactionInput)
 
         txInput.sign(alice.privateKey);
@@ -74,7 +74,24 @@ describe("Transaction Input tests", ()=> {
         const txInput = new TransactionInput({
             amount: 10,
             fromAddress: alice.publicKey,
+            previousTx: "abc"
+        } as TransactionInput)
 
+        txInput.sign(bob.privateKey);
+
+        //txInput.signature = "abc";
+
+        const valid = txInput.isValid();
+        //console.log(valid.message)
+        expect(valid.success).toBeFalsy();
+    })
+
+    test('should NOT be valid (invalid preVout)', () => {
+
+        const txInput = new TransactionInput({
+            amount: 10,
+            fromAddress: alice.publicKey,
+            //previousTx: "abc"
         } as TransactionInput)
 
         txInput.sign(bob.privateKey);

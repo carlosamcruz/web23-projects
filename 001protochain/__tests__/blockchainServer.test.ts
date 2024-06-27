@@ -4,11 +4,13 @@ import { app } from '../src/server/blockchainServer';
 import Block from '../src/lib/block';
 import Transacion from '../src/lib/transaction';
 import TransactionInput from '../src/lib/transactionInput';
+import TransactionOutput from '../src/lib/transactionOutput';
 
 jest.mock("../src/lib/block");
 jest.mock("../src/lib/blockchain");
 jest.mock("../src/lib/transaction");
 jest.mock("../src/lib/transactionInput");
+jest.mock("../src/lib/transactionOutput");
 
 describe('BlockchainServer Tests', () => {
     test('GET /status - should return status', async() => {
@@ -103,8 +105,8 @@ describe('BlockchainServer Tests', () => {
 
 
         const tx = new Transacion({
-            txInput: new TransactionInput(),
-            to: 'carteiraTo'
+            txInputs: [new TransactionInput()],
+            txOuputs: [new TransactionOutput()]
         } as Transacion)
 
         const response = await request(app)

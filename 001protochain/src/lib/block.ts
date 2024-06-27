@@ -87,8 +87,10 @@ export default class Block{
             if( feeTx.length > 1)
                 return new Validation(false, "Multiple fee txs.");
 
-            if(feeTx[0].to !== this.miner)
+            if(!feeTx[0].txOuputs.some(txo => txo.toAddress === this.miner))
                 return new Validation(false, "Invalid fee txs: different from miner.");
+
+            //TODO: validação da quantidade de taxas
 
             const validation = this.transactions.map(tx => tx.isValid());
             const errors = validation.filter(v => !v.success).map(v => v.message)
@@ -103,7 +105,7 @@ export default class Block{
         //if(this.hash != this.getHash()) return new Validation(false, "invalid hash."); 
         if(this.timestamp < 1) return new Validation(false, "invalid timestamp.");
         if(this.previousHash != previousHash) return new Validation(false, "invalid previous hash.");
-        if(!this.nonce || !this.miner) return new Validation(false, "Not mined.");
+        if(this.nonce < 1 || !this.miner) return new Validation(false, "Not mined.");
 
         //em uma blockchain real o número de zeros é em bits e não em nibbles
         const prefix = new Array(difficulty + 1).join("0");

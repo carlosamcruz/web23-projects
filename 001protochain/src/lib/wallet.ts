@@ -19,6 +19,8 @@ export default class Wallet{
                 keys = ECpair.fromPrivateKey(Buffer.from(wifOrPrivateKey, "hex"))
             else
                 keys = ECpair.fromWIF(wifOrPrivateKey)
+
+           //console.log("O teste passou por aqui: ", wifOrPrivateKey)     
         }
         else
             keys = ECpair.makeRandom();

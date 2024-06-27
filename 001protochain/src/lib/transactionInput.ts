@@ -12,6 +12,7 @@ export default class TransactionInput {
     fromAddress: string;
     amount: number;
     signature: string;
+    previousTx: string;
 
     /**
      * TransactionInput Class Constructor
@@ -19,6 +20,7 @@ export default class TransactionInput {
      */
     constructor(txInout?: TransactionInput)
     {
+        this.previousTx = txInout?.previousTx || "";
         this.fromAddress = txInout?.fromAddress || "";
         this.amount = txInout?.amount || 0;
         this.signature = txInout?.signature || "";
@@ -40,7 +42,7 @@ export default class TransactionInput {
      * @returns 
      */
     getHash(): string{
-        return sha256(this.fromAddress + this.amount).toString();
+        return sha256(this.previousTx + this.fromAddress + this.amount).toString();
     }
 
     /**
@@ -49,8 +51,8 @@ export default class TransactionInput {
      */
     isValid(): Validation{
 
-        if(!this.signature)
-            return new Validation(false, "Signature is required.");
+        if(!this.previousTx || !this.signature)
+            return new Validation(false, "Signature and PrevOut are required.");
 
         if(this.amount < 1)
             return new Validation(false, "Ammount should be greater than zero.");
