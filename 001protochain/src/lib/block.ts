@@ -75,7 +75,7 @@ export default class Block{
      * @param difficulty The current blockchain difficulty
      * @returns 
      */
-    isValid(previousHash: string, previousIndex: number, difficulty: number): Validation{
+    isValid(previousHash: string, previousIndex: number, difficulty: number, feePerTx: number): Validation{
 
         if(this.transactions && this.transactions.length){
 
@@ -90,9 +90,10 @@ export default class Block{
             if(!feeTx[0].txOuputs.some(txo => txo.toAddress === this.miner))
                 return new Validation(false, "Invalid fee txs: different from miner.");
 
-            //TODO: validação da quantidade de taxas
+            //DONE: validação da quantidade de taxas
 
-            const validation = this.transactions.map(tx => tx.isValid());
+            const totalFee = feePerTx * this.transactions.filter(tx => tx.type !== TransacionType.FEE).length;
+            const validation = this.transactions.map(tx => tx.isValid(difficulty, totalFee));
             const errors = validation.filter(v => !v.success).map(v => v.message)
             
             //if(this.transactions.filter(tx => !tx.isValid().success).length > 0)

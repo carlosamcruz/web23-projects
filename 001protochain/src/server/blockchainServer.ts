@@ -131,17 +131,12 @@ app.get('/transactions/:hash?', (req: Request, res: Response, next: NextFunction
 app.get('/wallets/:wallet', (req: Request, res: Response, next: NextFunction) => {
     const wallet = req.params.wallet;
 
-    //TODO: Fazer a versão final de UTXO
-    return res.json({
-        balance: 10,
-        fee: blokchain.getFeePerTx(),
-        utxo: [new TransactionOutput({
+    const utxo = blokchain.getUtxo(wallet);
+    const balance = blokchain.getBalance(wallet);
+    const fee = blokchain.getFeePerTx();
 
-            amount: 10,
-            toAddress: wallet,
-            tx: "abc"
-        } as TransactionOutput)]
-    })
+    //TODO: Fazer a versão final de UTXO
+    return res.json({ balance, fee, utxo })
 })
 
 //Nunca poderá ser testado com jest, mas pode ser ingorado:

@@ -31,13 +31,25 @@ export default class Transacion {
         return "abc";
     }
 
-    isValid(): Validation{
+    isValid(difficulty: number, totalFee: number): Validation{
 
-        if(this.timestamp < 1 || !this.hash)
+        if(this.timestamp < 1 || !this.hash || difficulty < 1 || totalFee < 0)
             return new Validation(false, "Invalid mock transaction.");
 
         return new Validation();
 
+    }
+
+    static fromReward(txo: TransactionOutput): Transacion{
+        const tx = new Transacion({
+            type: TransacionType.FEE,
+            txOuputs: [txo]
+        } as Transacion);
+
+        tx.txInputs = undefined;
+        tx.hash = tx.getHash();
+        tx.txOuputs[0].tx = tx.hash;
+        return tx;
     }
 
 }

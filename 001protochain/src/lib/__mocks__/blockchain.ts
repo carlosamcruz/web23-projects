@@ -2,9 +2,9 @@ import Block from "./block";
 import Validation from "../validation";
 import BlockInfo from "../blockInfo";
 import Transacion from "./transaction";
-import TransacionType from "../transactionType";
 import TransactionSearch from "../transactionSearch";
 import TransactionInput from "./transactionInput";
+import TransactionOutput from "./transactionOutput";
 
 /**
  * Mocked Blockchain class
@@ -77,7 +77,7 @@ export default class Blockchain{
      */
     addTransaction(transaction: Transacion): Validation{
 
-        const validation = transaction.isValid();
+        const validation = transaction.isValid(1, 10);
         if(!validation.success)
             return new Validation(false, validation.message);
         this.mempool.push(transaction);
@@ -136,11 +136,62 @@ export default class Blockchain{
     getNextBlock(): BlockInfo{
         return {
             transactions: this.mempool.slice(0, 2),
-            difficulty: 1, 
+            difficulty: 2, 
             previousHash: this.getLastBlock().hash, 
             index: this.blocks.length, 
             feePerTx: this.getFeePerTx(), 
             maxDifficulty: 62
         } as BlockInfo;
     }   
+
+    /**
+     * Get Tx Inputs of a wallet
+     * @param wallet
+     * @returns 
+     */
+    getTxInputs(wallet: string): (TransactionInput | undefined)[] {
+
+        return [new TransactionInput({
+            amount: 10,
+            fromAddress: wallet,
+            previousTx: "abc",
+            signature: "abc"
+        } as TransactionInput)];
+    }
+
+    /**
+     * Get Tx Outputs of a Wallet
+     * @param wallet 
+     * @returns 
+     */
+    getTxOutputs(wallet: string): TransactionOutput[] {
+
+        return [new TransactionOutput({
+            amount: 10,
+            toAddress: wallet,
+            tx: "abc"
+        } as TransactionOutput)];
+    }
+
+    /**
+     * Get Utxo Set of a Wallet
+     * @param wallet 
+     * @returns 
+     */
+    getUtxo(wallet: string): TransactionOutput[]{
+        
+        return this.getTxOutputs(wallet);
+    }
+
+    /**
+     * Get the Balance of a Wallet
+     * @param wallet 
+     * @returns 
+     */
+    getBalance(wallet: string): number {
+
+        return 10;
+
+    }
+
 }

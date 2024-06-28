@@ -3,6 +3,7 @@ import TransacionType from "./transactionType";
 import Validation from "./validation";
 import TransactionInput from "./transactionInput";
 import TransactionOutput from "./transactionOutput";
+import Blockchain from "./blockchain";
 /**
  * Class Transaction
  */
@@ -44,7 +45,23 @@ export default class Transacion {
         return sha256(this.type + from + to + this.timestamp).toString(); //super zoado
     }
 
-    isValid(): Validation{
+    getFee(): number{
+        let inputSum: number = 0, outputSum: number = 0;
+
+        if(this.txInputs && this.txInputs.length > 0){
+
+            inputSum = this.txInputs.map(txi => txi.amount).reduce((a, b) => a+b);
+            
+            if(this.txOuputs && this.txOuputs.length > 0)
+                outputSum = this.txOuputs.map(txo => txo.amount).reduce((a, b) => a+b);
+
+            return inputSum - outputSum;
+        }
+
+        return 0;
+    }
+
+    isValid(difficulty: number, totalFee: number): Validation{
 
         if(this.hash !== this.getHash())
             return new Validation(false, "Invalid hash.");
@@ -72,10 +89,24 @@ export default class Transacion {
         if(this.txOuputs.some(txo => txo.tx !== this.hash))
             return new Validation(false, `Invalid tx: due to invalid zoacao.`);
 
-        //TODO: validar as taxas e recompensas quando tx.type === FEE
+        //DONE: validar as taxas e recompensas quando tx.type === FEE
 
+        if(this.type === TransacionType.FEE){
+            const txo = this.txOuputs[0];
+            if(txo.amount > Blockchain.getRewardAmount(difficulty) + totalFee)
+                return new Validation(false, "Invalid tx reward.");
+        }
         return new Validation();
-
     }
 
+    static fromReward(txo: TransactionOutput): Transacion{
+        const tx = new Transacion({
+            type: TransacionType.FEE,
+            txOuputs: [txo]
+        } as Transacion);
+
+        tx.hash = tx.getHash();
+        tx.txOuputs[0].tx = tx.hash;
+        return tx;
+    }
 }

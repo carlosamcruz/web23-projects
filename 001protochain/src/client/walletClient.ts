@@ -91,14 +91,16 @@ function recoverWallet(){
     });
 }
 
-function getBalance(){
+async function getBalance(){
     console.clear();
     if(!myWalletPub){
         console.log("You don´t have a wallet yet.");
         return preMenu();
     }
 
-    //TODO: Get Balance via API;
+    //DONE: Get Balance via API;
+    const{data} = await axios.get(`${BLOCKCHAIN_SERVER}wallets/${myWalletPub}`);
+    console.log("Balance: ", data.balance);
     preMenu();
 }
 
@@ -136,22 +138,35 @@ function sendTX(){
                 return preMenu();
             }
 
-            const tx = new Transacion();
-            tx.timestamp = Date.now();
-            tx.txOuputs = [new TransactionOutput({
+            const txInputs = utxo.map(txo => TransactionInput.fromTxo(txo));
+            txInputs.forEach((txi, index, arr) => arr[index].sign(myWalletPriv));
+
+            const txOutput = [] as TransactionOutput [];
+            //Transação de transferencia
+            txOutput.push(new TransactionOutput({
                 toAddress: toWallet,
                 amount,
-            } as TransactionOutput)];
-            tx.type = TransacionType.REGULAR;
-            tx.txInputs = [new TransactionInput({
-                fromAddress: myWalletPub,
-                amount: amount,
-                previousTx: utxo[0].tx
-            } as TransactionInput)];
+            } as TransactionOutput));
+            
+            const remainingBalance = balance - amount - fee;
 
-            tx.txInputs[0].sign(myWalletPriv);
+            //Transação de Troco
+            txOutput.push(new TransactionOutput({
+                toAddress: myWalletPub,
+                amount: remainingBalance
+            } as TransactionOutput));
+
+            const tx = new Transacion({
+                txInputs: txInputs,
+                txOuputs: txOutput
+            } as Transacion);
+
             tx.hash = tx.getHash();
-            tx.txOuputs[0].tx = tx.hash;
+            //tx.txOuputs[0].tx = tx.hash;
+            tx.txOuputs.forEach((txo, index, arr) => arr[index].tx = tx.hash );
+
+            console.log(tx);
+            console.log("Remaining Balace: ", remainingBalance);
 
             try{
 
