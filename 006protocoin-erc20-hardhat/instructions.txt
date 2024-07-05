@@ -8,12 +8,13 @@ npx hardhat compile
 
 package.json 
 
-    "test": "npx hardhat test"
+    "start": "npx hardhat node",
+    "test": "npx hardhat test",
+    "compile": "npx hardhat compile"
 
-
+npm run compile
 npm test
 
-npx hardhat node
 
 package.json 
 
