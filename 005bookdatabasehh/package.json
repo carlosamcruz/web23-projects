@@ -1,0 +1,23 @@
+{
+  "name": "005bookdatabasehh",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "npx hardhat node",
+    "test": "npx hardhat test",
+    "deploylocal": "npx hardhat ignition deploy ignition/modules/BookDatabase.ts --network local",
+    "deploysepolia": "npx hardhat ignition deploy ignition/modules/BookDatabase.ts --network sepolia"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+    "@nomiclabs/hardhat-etherscan": "^3.1.8",
+    "hardhat": "^2.22.6"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5"
+  }
+}
