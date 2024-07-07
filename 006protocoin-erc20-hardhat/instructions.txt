@@ -1,5 +1,11 @@
 Inicar um projeto o ZERO:
 
+//Template ERC-20
+//https://ethereum.org/pt/developers/docs/standards/tokens/erc-20/
+
+//wei - eth converter:
+//https://eth-converter.com/
+
 npm init -y
 npm i -D hardhat
 npx hardhat init
@@ -19,11 +25,11 @@ npm test
 package.json 
 
     "start": "npx hardhat node"
-    "deploy": "npx hardhat ignition deploy ignition/modules/BookDatabase.ts --network local"
+    "deploy:dev": "npx hardhat ignition deploy ignition/modules/ProtoCoin.ts --network local"
 
-npm run deploy    
+npm run deploy:dev    
 
-Testes do Contrato no HardHat Console:
+***Testes do Contrato no HardHat Console:
 
 npx hardhat console (M2 L5 Aula 8)
 
@@ -35,18 +41,19 @@ npx hardhat console (M2 L5 Aula 8)
     await contractInstance.balanceOf("0x70997970C51812dc3A010C7d01b50e0d17dc79C8")
     await contractInstance.allowance("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266", "0x70997970C51812dc3A010C7d01b50e0d17dc79C8")
 
-
-
-
-
+***Etapa para testes em TestNET:
 
 npm i dotenv
 
-    "deploylocal": "npx hardhat ignition deploy ignition/modules/BookDatabase.ts --network local",
-    "deploysepolia": "npx hardhat ignition deploy ignition/modules/BookDatabase.ts --network sepolia"
+npm i -D @nomiclabs/hardhat-etherscan
 
-    npm run deploysepolia
+    "deploy:dev": "npx hardhat ignition deploy ignition/modules/ProtoCoin.ts --network local",
+    "deploy:prod": "npx hardhat ignition deploy ignition/modules/ProtoCoin.ts --network sepolia"
 
-npm i -D @nomiclabs/hardhat-etherscan    
+npm run deploy:prod
 
-npx hardhat verify --network sepolia 0x80e85F53abCEAFE44D887579a8eDF764caA36840
+npx hardhat verify --network sepolia 0x1aCe5e7CC21Cd6F5CE3F1585B74e244Ad5A27659
+
+//etherscan token page
+//https://sepolia.etherscan.io/token/0x1aCe5e7CC21Cd6F5CE3F1585B74e244Ad5A27659
+//https://info.etherscan.com/token-update-guide/
