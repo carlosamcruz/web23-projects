@@ -81,5 +81,58 @@ describe("ProtoCoin Tests", function () {
       .to.be.revertedWith("Insuficient balance.");
   });
 
+  it("Should approve", async function () {
+    const { protoCoin, owner, otherAccount } = await loadFixture(deployProtoCoinFixture);
+
+    await protoCoin.approve(otherAccount.address, 10);
+
+    const value = await protoCoin.allowance(owner.address, otherAccount.address); 
+
+    expect(value).to.equal(10);
+  });
+
+
+  it("Should transfer from", async function () {
+    const { protoCoin, owner, otherAccount } = await loadFixture(deployProtoCoinFixture);
+
+    const balanceOwnerBefore = await protoCoin.balanceOf(owner.address);
+    const balanceOtherBefore = await protoCoin.balanceOf(otherAccount.address);
+
+    await protoCoin.approve(otherAccount.address, 10);
+
+    const instance = protoCoin.connect(otherAccount);
+
+    await instance.transferFrom(owner.address, otherAccount.address, 5);
+
+    const balanceOwnerAfter = await protoCoin.balanceOf(owner.address);
+    const balanceOtherAfter = await protoCoin.balanceOf(otherAccount.address);
+
+    const allowance = await protoCoin.allowance(owner.address, otherAccount.address); 
+
+    expect(balanceOwnerBefore).to.equal(21000n * 10n ** 18n);
+    expect(balanceOwnerAfter).to.equal(21000n * 10n ** 18n - 5n);
+
+    expect(balanceOtherBefore).to.equal(0);
+    expect(balanceOtherAfter).to.equal(5);
+
+    expect(allowance).to.equal(5);
+  });
+
+  it("Should NOT transfer from (balance)", async function () {
+    const { protoCoin, owner, otherAccount } = await loadFixture(deployProtoCoinFixture);
+
+    const instance = protoCoin.connect(otherAccount);
+    await expect(instance.transferFrom(otherAccount.address, otherAccount.address, 1))
+      .to.be.revertedWith("Insuficient Balance.");
+  });
+
+  it("Should NOT transfer from (allowance)", async function () {
+    const { protoCoin, owner, otherAccount } = await loadFixture(deployProtoCoinFixture);
+
+    const instance = protoCoin.connect(otherAccount);
+    await expect(instance.transferFrom(owner.address, otherAccount.address, 1))
+      .to.be.revertedWith("Insuficient allowance.");
+  });
+
 
 });
