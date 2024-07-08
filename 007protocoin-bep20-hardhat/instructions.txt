@@ -1,0 +1,68 @@
+Inicar um projeto o ZERO:
+
+//Template BEP-20
+
+npm install @openzeppelin/contracts
+
+
+
+
+
+
+
+//https://ethereum.org/pt/developers/docs/standards/tokens/erc-20/
+
+//wei - eth converter:
+//https://eth-converter.com/
+
+npm init -y
+npm i -D hardhat
+npx hardhat init
+
+npx hardhat compile
+
+package.json 
+
+    "start": "npx hardhat node",
+    "test": "npx hardhat test",
+    "compile": "npx hardhat compile"
+
+npm run compile
+npm test
+
+
+package.json 
+
+    "start": "npx hardhat node"
+    "deploy:dev": "npx hardhat ignition deploy ignition/modules/ProtoCoin.ts --network local"
+
+npm run deploy:dev    
+
+***Testes do Contrato no HardHat Console:
+
+npx hardhat console (M2 L5 Aula 8)
+
+    const contract = await ethers.getContractAt("ProtoCoin", "0x5FbDB2315678afecb367f032d93F642f64180aa3")
+    await contract.approve("0x70997970C51812dc3A010C7d01b50e0d17dc79C8", 1n * 10n ** 18n)
+    const [owner, otherAccount] = await ethers.getSigners()
+    const contractInstance = contract.connect(otherAccount)
+    await contractInstance.transferFrom("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266", "0x70997970C51812dc3A010C7d01b50e0d17dc79C8", 1n * 10n ** 18n)
+    await contractInstance.balanceOf("0x70997970C51812dc3A010C7d01b50e0d17dc79C8")
+    await contractInstance.allowance("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266", "0x70997970C51812dc3A010C7d01b50e0d17dc79C8")
+
+***Etapa para testes em TestNET:
+
+npm i dotenv
+
+npm i -D @nomiclabs/hardhat-etherscan
+
+    "deploy:dev": "npx hardhat ignition deploy ignition/modules/ProtoCoin.ts --network local",
+    "deploy:prod": "npx hardhat ignition deploy ignition/modules/ProtoCoin.ts --network sepolia"
+
+npm run deploy:prod
+
+npx hardhat verify --network sepolia 0x1aCe5e7CC21Cd6F5CE3F1585B74e244Ad5A27659
+
+//etherscan token page
+//https://sepolia.etherscan.io/token/0x1aCe5e7CC21Cd6F5CE3F1585B74e244Ad5A27659
+//https://info.etherscan.com/token-update-guide/
