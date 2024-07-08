@@ -19,10 +19,17 @@ const config: HardhatUserConfig = {
       url: process.env.INFURA_URL,
       chainId: Number(process.env.CHAIN_ID),
       accounts: [String(process.env.PVK_ACCOUNT1)]      
+    },
+    //https://academy.binance.com/pt/articles/connecting-metamask-to-binance-smart-chain
+    bsctest: {
+      url: process.env.BSCTEST_URL,
+      chainId: Number(process.env.BSC_CHAIN_ID),
+      accounts: [String(process.env.PVK_ACCOUNT1)]      
     }
   },
   etherscan: {
-    apiKey: process.env.API_KEY
+    //apiKey: process.env.API_KEY
+    apiKey: process.env.API_KEY_BSC
   },
   sourcify: {
     enabled: true

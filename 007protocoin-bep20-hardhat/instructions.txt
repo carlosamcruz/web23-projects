@@ -6,7 +6,17 @@ npm install @openzeppelin/contracts
 
 
 
+package.json
 
+    "deploy:bsc": "npx hardhat run scripts/deploy.ts --network bsctest"
+
+npm run deploy:bsc    
+
+Contract deployed at 0x167b9d7FecdDf7c8BFbb68465831598638a281C9
+
+//https://bscscan.com/myapikey
+
+npx hardhat verify --network bsctest 0x167b9d7FecdDf7c8BFbb68465831598638a281C9
 
 
 

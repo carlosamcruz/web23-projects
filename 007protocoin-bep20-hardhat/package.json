@@ -1,5 +1,5 @@
 {
-  "name": "006protocoin-erc20-hardhat",
+  "name": "007protocoin-bep20-hardhat",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
@@ -7,7 +7,8 @@
     "test": "npx hardhat test",
     "compile": "npx hardhat compile",
     "deploy:dev": "npx hardhat ignition deploy ignition/modules/ProtoCoin.ts --network local",
-    "deploy:prod": "npx hardhat ignition deploy ignition/modules/ProtoCoin.ts --network sepolia"
+    "deploy:prod": "npx hardhat ignition deploy ignition/modules/ProtoCoin.ts --network sepolia",
+    "deploy:bsc": "npx hardhat run scripts/deploy.ts --network bsctest"
   },
   "keywords": [],
   "author": "",
