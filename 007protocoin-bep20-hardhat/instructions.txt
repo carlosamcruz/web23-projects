@@ -19,6 +19,8 @@ Contract deployed at 0x167b9d7FecdDf7c8BFbb68465831598638a281C9
 npx hardhat verify --network bsctest 0x167b9d7FecdDf7c8BFbb68465831598638a281C9
 
 
+npx hardhat compile
+
 
 //https://ethereum.org/pt/developers/docs/standards/tokens/erc-20/
 
