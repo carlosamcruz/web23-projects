@@ -1,6 +1,12 @@
 import React from 'react';
+import { mint } from './Web3Service';
 
 function App() {
+
+  function onBtnClick(){
+    mint();
+  }
+
   return (
     <div className="cover-container d-flex w-100 h-100 p-3 mx-auto flex-column">
 
@@ -18,8 +24,8 @@ function App() {
         <h1>Get your ProtoCoins</h1>
         <p className="lead">Get for free 1000 coins once a day.</p>
         <p className="lead">
-          <a href="#" className="btn btn-lg btn-light fw-bold border-white bg-white">
-            <img src='/assets/metamask.svg' alt='MetaMask Logo' width={48} />
+          <a href="#" onClick={onBtnClick} className="btn btn-lg btn-light fw-bold border-white bg-white">
+            <img src='/assets/metamask.svg' alt='MetaMask Logo' width="48" />
             Connect MetaMask
           </a>
         </p>
