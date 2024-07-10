@@ -12,12 +12,15 @@ package.json
 
 npm run deploy:bsc    
 
-Contract deployed at 0x167b9d7FecdDf7c8BFbb68465831598638a281C9
+Contract deployed at    0x167b9d7FecdDf7c8BFbb68465831598638a281C9
+                        0x7E858582031381Dce7F09372e9A26c16C9Fd4e12
 
 //https://bscscan.com/myapikey
 
 npx hardhat verify --network bsctest 0x167b9d7FecdDf7c8BFbb68465831598638a281C9
+npx hardhat verify --network bsctest 0x7E858582031381Dce7F09372e9A26c16C9Fd4e12
 
+https://testnet.bscscan.com/address/0x7E858582031381Dce7F09372e9A26c16C9Fd4e12
 
 npx hardhat compile
 

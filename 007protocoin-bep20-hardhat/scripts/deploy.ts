@@ -3,9 +3,9 @@ import hre from "hardhat";
 
 async function main() {
 
-    //const protoCoin = await ethers.deployContract("ProtoCoin");
-
     const protoCoin = await hre.ethers.deployContract("ProtoCoin");
+
+    //const protoCoin = await hre.ethers.deployContract("ProtoCoinMint");
     await protoCoin.waitForDeployment();
 
     console.log(`Contract deployed at ${protoCoin.target}`);

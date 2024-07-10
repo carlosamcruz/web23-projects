@@ -2,3 +2,5 @@ npx create-react-app@latest 008protocoin-faucet --template typescript
 npx create-react-app helloworld02 --template typescript
 
 npm start
+
+npm install web3

@@ -4,7 +4,9 @@ import { mint } from './Web3Service';
 function App() {
 
   function onBtnClick(){
-    mint();
+    mint()
+      .then((tx) => alert(tx))
+      .catch(err => alert(err.message));
   }
 
   return (
