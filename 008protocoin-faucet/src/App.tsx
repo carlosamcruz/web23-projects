@@ -1,12 +1,15 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { mint } from './Web3Service';
 
 function App() {
 
+  const [message, setMessage] = useState("");
+
   function onBtnClick(){
+    setMessage("Requesting tokens... wait...");
     mint()
-      .then((tx) => alert(tx))
-      .catch(err => alert(err.message));
+      .then((tx) => setMessage("Your tokens were sent. TX: " + tx))
+      .catch(err => setMessage(err.message));
   }
 
   return (
@@ -30,6 +33,9 @@ function App() {
             <img src='/assets/metamask.svg' alt='MetaMask Logo' width="48" />
             Connect MetaMask
           </a>
+        </p>
+        <p className="lead">
+          {message}
         </p>
       </main>
 
