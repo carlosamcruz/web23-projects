@@ -1,10 +1,12 @@
 import express, { Request, Response, NextFunction }  from "express";
 import morgan from "morgan";
 
-import { mintAndTransfer } from "./Web3Provider";
 
 import dotenv from "dotenv";
 dotenv.config();
+
+import { mintAndTransfer } from "./Web3Provider"; // precisa vir depois do dotenv.config()
+
 
 const PORT: number = parseInt(`${process.env.PORT || 3001}`);
 
