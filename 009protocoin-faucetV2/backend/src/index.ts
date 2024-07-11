@@ -7,12 +7,17 @@ dotenv.config();
 
 import { mintAndTransfer } from "./Web3Provider"; // precisa vir depois do dotenv.config()
 
+import cors from "cors";
 
 const PORT: number = parseInt(`${process.env.PORT || 3001}`);
 
 const app = express();
 
 app.use(morgan("tiny"));
+//app.use(cors()); //habilita o uso para qualquer backend
+app.use(cors({
+    origin: process.env.CORS_ORIGIN || '*'
+}));
 
 app.post("/mint/:wallet", async (req: Request, res: Response, next: NextFunction) => {
     try{
@@ -21,8 +26,9 @@ app.post("/mint/:wallet", async (req: Request, res: Response, next: NextFunction
         res.json(tx);
 
     }
-    catch(err){
-        res.status(500).json(err);
+    catch(err: any){
+        console.log(err);
+        res.status(500).json(err.message);
     }
 });
 

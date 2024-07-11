@@ -4,3 +4,5 @@ npx create-react-app helloworld02 --template typescript
 npm start
 
 npm install web3
+
+npm i axios

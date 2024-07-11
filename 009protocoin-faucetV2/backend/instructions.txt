@@ -24,3 +24,8 @@ package.json
     "start": "node ./dist/index.js"
 
 npm i web3
+
+Politica de Cors não permite que acesse um site por um browser que está em um servidor differente;
+
+npm i cors
+npm i -D @types/cors
