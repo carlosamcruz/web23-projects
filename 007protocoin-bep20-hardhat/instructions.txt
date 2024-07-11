@@ -15,15 +15,23 @@ npm run deploy:bsc
 Contract deployed at    0x167b9d7FecdDf7c8BFbb68465831598638a281C9
                         0x7E858582031381Dce7F09372e9A26c16C9Fd4e12
 
+New Version             0x57735bF97289a8B981349C3037A41e25bD6Eb489
+
 //https://bscscan.com/myapikey
 
 npx hardhat verify --network bsctest 0x167b9d7FecdDf7c8BFbb68465831598638a281C9
 npx hardhat verify --network bsctest 0x7E858582031381Dce7F09372e9A26c16C9Fd4e12
 
+npx hardhat verify --network bsctest 0x57735bF97289a8B981349C3037A41e25bD6Eb489
+
 https://testnet.bscscan.com/address/0x7E858582031381Dce7F09372e9A26c16C9Fd4e12
+
+https://testnet.bscscan.com/address/0x57735bF97289a8B981349C3037A41e25bD6Eb489
 
 npx hardhat compile
 
+
+npx hardhat node
 
 //https://ethereum.org/pt/developers/docs/standards/tokens/erc-20/
 

@@ -43,7 +43,7 @@ describe("ProtoCoinMint Tests", function () {
 
     const totalSupply = await protoCoin.totalSupply();
 
-    expect(totalSupply).to.equal(21000n * 10n ** 18n);
+    expect(totalSupply).to.equal(21000000n * 10n ** 18n);
   });
 
   it("Should get balance", async function () {
@@ -51,7 +51,7 @@ describe("ProtoCoinMint Tests", function () {
 
     const balance = await protoCoin.balanceOf(owner.address);
 
-    expect(balance).to.equal(21000n * 10n ** 18n);
+    expect(balance).to.equal(21000000n * 10n ** 18n);
   });
 
   it("Should transfer", async function () {
@@ -65,8 +65,8 @@ describe("ProtoCoinMint Tests", function () {
     const balanceOwnerAfter = await protoCoin.balanceOf(owner.address);
     const balanceOtherAfter = await protoCoin.balanceOf(otherAccount.address);
 
-    expect(balanceOwnerBefore).to.equal(21000n * 10n ** 18n);
-    expect(balanceOwnerAfter).to.equal(21000n * 10n ** 18n - 1n);
+    expect(balanceOwnerBefore).to.equal(21000000n * 10n ** 18n);
+    expect(balanceOwnerAfter).to.equal(21000000n * 10n ** 18n - 1n);
 
     expect(balanceOtherBefore).to.equal(0n);
     expect(balanceOtherAfter).to.equal(1);
@@ -109,8 +109,8 @@ describe("ProtoCoinMint Tests", function () {
 
     const allowance = await protoCoin.allowance(owner.address, otherAccount.address); 
 
-    expect(balanceOwnerBefore).to.equal(21000n * 10n ** 18n);
-    expect(balanceOwnerAfter).to.equal(21000n * 10n ** 18n - 5n);
+    expect(balanceOwnerBefore).to.equal(21000000n * 10n ** 18n);
+    expect(balanceOwnerAfter).to.equal(21000000n * 10n ** 18n - 5n);
 
     expect(balanceOtherBefore).to.equal(0);
     expect(balanceOtherAfter).to.equal(5);
@@ -146,12 +146,14 @@ describe("ProtoCoinMint Tests", function () {
     const balanceOtherBefore = await protoCoin.balanceOf(otherAccount.address);
 
     const instance = protoCoin.connect(otherAccount);
-    await instance.mint();
+    await protoCoin.mint(otherAccount.address);
     const balanceOtherAfter = await protoCoin.balanceOf(otherAccount.address);
 
     expect(balanceOtherAfter).to.equal(balanceOtherBefore + mintAmount);
 
   });
+
+  /*
 
   it("Should mint twice", async function () {
     const { protoCoin, owner, otherAccount } = await loadFixture(deployProtoCoinFixture);
@@ -161,16 +163,17 @@ describe("ProtoCoinMint Tests", function () {
 
 
     const balanceOwnerBefore = await protoCoin.balanceOf(owner.address);
-    await protoCoin.mint();
+    await protoCoin.mint(otherAccount.address);
 
     const balanceOtherBefore = await protoCoin.balanceOf(otherAccount.address);
     const instance = protoCoin.connect(otherAccount);
-    await instance.mint();
+    await protoCoin.mint(otherAccount.address);
     const balanceOtherAfter = await protoCoin.balanceOf(otherAccount.address);
    
     expect(balanceOtherAfter).to.equal(balanceOtherBefore + mintAmount);
 
   });
+  */
 
   it("Should mint twice (different moments)", async function () {
     const { protoCoin, owner, otherAccount } = await loadFixture(deployProtoCoinFixture);
@@ -180,14 +183,14 @@ describe("ProtoCoinMint Tests", function () {
 
     const balanceOtherBefore = await protoCoin.balanceOf(otherAccount.address);
     const instance = protoCoin.connect(otherAccount);
-    await instance.mint();
+    await protoCoin.mint(otherAccount.address);
 
     const mintDelay = 60 * 60 * 24 * 2; // 2 dia em segundos;
 
     await time.increase(mintDelay);
 
 
-    await instance.mint();
+    await protoCoin.mint(otherAccount.address);
 
 
     const balanceOtherAfter = await protoCoin.balanceOf(otherAccount.address);
@@ -229,7 +232,7 @@ describe("ProtoCoinMint Tests", function () {
   it("Should NOT mint", async () => {
     const { protoCoin, owner, otherAccount } = await loadFixture(deployProtoCoinFixture);
 
-    await expect(protoCoin.mint())
+    await expect(protoCoin.mint(otherAccount.address))
       .to.be.revertedWith("Mint is not enabled.");
   })
 
@@ -238,11 +241,21 @@ describe("ProtoCoinMint Tests", function () {
 
     await protoCoin.setMintAmount(1000n);
 
-    await protoCoin.mint();
+    await protoCoin.mint(otherAccount.address);
 
-    await expect(protoCoin.mint())
+    await expect(protoCoin.mint(otherAccount.address))
       .to.be.revertedWith("You cannot mint twice in a day.");
   })
+
+  it("Should NOT mint (Owner)", async () => {
+    const { protoCoin, owner, otherAccount } = await loadFixture(deployProtoCoinFixture);
+
+    await protoCoin.setMintAmount(1000n);
+
+    await expect(protoCoin.mint(owner.address))
+      .to.be.revertedWith("Do not mint with owner address.");
+  })
+
 
 
 });

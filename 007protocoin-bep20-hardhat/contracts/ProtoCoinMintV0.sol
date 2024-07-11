@@ -3,7 +3,7 @@ pragma solidity ^0.8.24;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
-contract ProtoCoinMint is ERC20 {
+contract ProtoCoinMintV0 is ERC20 {
 
     address private _owner;
     uint private _mintAmount = 0;
@@ -11,18 +11,17 @@ contract ProtoCoinMint is ERC20 {
 
     mapping(address => uint256) private nextMint;
 
-    constructor() ERC20("ProtoCoinMint", "PRCM") {
+    constructor() ERC20("ProtoCoinMintV0", "PRCM") {
         _owner = msg.sender;
-        _mint(msg.sender, 21000000 * 10 ** 18);
+        _mint(msg.sender, 21000 * 10 ** 18);
     }
 
 
-    function mint(address to) public restricted{
-        require (to != msg.sender, "Do not mint with owner address.");
+    function mint() public{
         require (_mintAmount > 0, "Mint is not enabled.");
-        require (block.timestamp > nextMint[to], "You cannot mint twice in a day.");
-        _mint(to, _mintAmount);
-        nextMint[to] = block.timestamp + _mintDelay;
+        require (block.timestamp > nextMint[msg.sender], "You cannot mint twice in a day.");
+        _mint(msg.sender, _mintAmount);
+        nextMint[msg.sender] = block.timestamp + _mintDelay;
     }
 
     function setMintAmount(uint256 newAmount) public restricted {

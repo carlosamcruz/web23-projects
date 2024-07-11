@@ -1,0 +1,26 @@
+npm init -y
+
+npm i express morgan dotenv
+
+npm i -D @types/express @types/morgan nodemon ts-node typescript
+
+npx tsc --init
+
+tsconfig.json
+
+    "rootDir": "./", => "rootDir": "./src/",
+    "moduleResolution": "node10",
+    "outDir": "./", => "outDir": "./dist/",
+        ,
+    "ts-node": {
+        "transpileOnly": true
+    }
+
+package.json
+
+    scripts:
+    "dev": "ts-node src/index.ts",
+    "compile": "npx tsc",
+    "start": "node ./dist/index.js"
+
+npm i web3
