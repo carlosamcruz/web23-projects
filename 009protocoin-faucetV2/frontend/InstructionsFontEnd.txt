@@ -6,3 +6,10 @@ npm start
 npm install web3
 
 npm i axios
+
+Aula 07
+
+npm i react-google-recaptcha
+npm i -D @types/react-google-recaptcha
+
+recaptcha site key: https://www.npmjs.com/package/react-google-recaptcha

@@ -247,6 +247,7 @@ describe("ProtoCoinMint Tests", function () {
       .to.be.revertedWith("You cannot mint twice in a day.");
   })
 
+  /*
   it("Should NOT mint (Owner)", async () => {
     const { protoCoin, owner, otherAccount } = await loadFixture(deployProtoCoinFixture);
 
@@ -255,6 +256,7 @@ describe("ProtoCoinMint Tests", function () {
     await expect(protoCoin.mint(owner.address))
       .to.be.revertedWith("Do not mint with owner address.");
   })
+  */
 
 
 

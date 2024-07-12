@@ -18,7 +18,7 @@ contract ProtoCoinMint is ERC20 {
 
 
     function mint(address to) public restricted{
-        require (to != msg.sender, "Do not mint with owner address.");
+        //require (to != msg.sender, "Do not mint with owner address.");
         require (_mintAmount > 0, "Mint is not enabled.");
         require (block.timestamp > nextMint[to], "You cannot mint twice in a day.");
         _mint(to, _mintAmount);

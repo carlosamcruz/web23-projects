@@ -7,6 +7,12 @@ import axios from "axios";
 
 export async function mint(){
 
+    const nextMint = localStorage.getItem("nextMint");
+    const wallet = localStorage.getItem("wallet");
+
+    if(nextMint && parseInt(nextMint) > Date.now())
+        throw new Error("You can not mint tokens twice in a day. Try again in: " + Math.floor((parseInt(nextMint) - Date.now())*0.001) + " seconds");
+
     if(!window.ethereum) throw new Error("No MetaMask found.");
 
     const web3 = new Web3(window.ethereum);
@@ -29,9 +35,10 @@ export async function mint(){
 
     */
 
+    localStorage.setItem("wallet", accounts[0]);
+    localStorage.setItem("nextMint", `${Date.now() + (1000 * 60 * 60 * 24)}`);
     
     const response = await axios.post(`${process.env.REACT_APP_API_URL}/mint/${accounts[0]}`);
-
     return response.data;
 
 }
