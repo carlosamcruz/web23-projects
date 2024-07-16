@@ -1,0 +1,18 @@
+{
+  "scripts": {
+    "start": "npx hardhat node",
+    "test": "npx hardhat test",
+    "compile": "npx hardhat compile",
+    "deploy:dev": "npx hardhat ignition deploy ignition/modules/ProtoCoin.ts --network local",
+    "deploy:prod": "npx hardhat ignition deploy ignition/modules/ProtoCoin.ts --network sepolia",
+    "deploy:bsc": "npx hardhat run scripts/deploy.ts --network bsctest"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+    "@nomiclabs/hardhat-etherscan": "^3.1.8",
+    "hardhat": "^2.22.6"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5"
+  }
+}

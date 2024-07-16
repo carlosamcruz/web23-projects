@@ -1,0 +1,14 @@
+md frontend
+md blockchain
+
+
+cd blockchain // Dentro da pasta BLockchain
+npm init -y //Foi esquecida neste projeto
+npm i -D hardhat
+npx hardhat init
+
+npm i dotenv
+
+npm i -D @nomiclabs/hardhat-etherscan
+
+npx hardhat compile
