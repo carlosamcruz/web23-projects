@@ -3,7 +3,7 @@
     "start": "npx hardhat node",
     "test": "npx hardhat test",
     "compile": "npx hardhat compile",
-    "deploy:dev": "npx hardhat ignition deploy ignition/modules/ProtoCoin.ts --network local",
+    "deploy:dev": "npx hardhat run scripts/deploy.ts --network local",
     "deploy:prod": "npx hardhat ignition deploy ignition/modules/ProtoCoin.ts --network sepolia",
     "deploy:bsc": "npx hardhat run scripts/deploy.ts --network bsctest"
   },

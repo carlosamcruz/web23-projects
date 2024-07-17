@@ -3,13 +3,18 @@ import hre from "hardhat";
 
 async function main() {
 
-    const contract = await hre.ethers.deployContract("JoKenPo");
-    await contract.waitForDeployment();
+    const implementation = await hre.ethers.deployContract("JoKenPo");
+    await implementation.waitForDeployment();
+    const implementationAddress = await implementation.getAddress();
+    console.log(`ImplementationAddress deployed at ${implementationAddress}`);
 
-    const address = await contract.getAddress();
+    const adapter = await hre.ethers.deployContract("JKPAdapter");
+    await adapter.waitForDeployment();
+    const adapterAddress = await adapter.getAddress();
+    console.log(`AdapterAddress deployed at ${adapterAddress}`);
 
-    console.log(`Contract deployed at ${contract.target}`);
-    console.log(`Contract deployed at ${address}`);
+    await adapter.upgrade(implementationAddress);
+    console.log("Adapter was upgraded.");
     
 }
 

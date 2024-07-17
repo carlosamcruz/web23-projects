@@ -12,3 +12,48 @@ npm i dotenv
 npm i -D @nomiclabs/hardhat-etherscan
 
 npx hardhat compile
+
+local deploy, packge.json:     "deploy:dev": "npx hardhat run scripts/deploy.ts --network local",
+
+    npm run deploy:dev
+
+    ImplementationAddress deployed at 0xE6E340D132b5f46d1e472DebcD681B2aBc16e57E
+    AdapterAddress deployed at 0xc3e53F4d16Ae77Db1c982e75a937B9f60FE63690
+
+hardhat cosole
+
+    npx hardhat console
+
+    const [owner, player1, player2] = await hre.ethers.getSigners();
+
+    const contract = await hre.ethers.getContractAt("JKPAdapter", "0xc3e53F4d16Ae77Db1c982e75a937B9f60FE63690");
+
+    const instace1 = await contract.connect(player1);
+    const instace2 = await contract.connect(player2);
+
+    const DEFAULT_BID = ethers.parseEther("0.01");
+
+    await instace1.play(2, {value: DEFAULT_BID});
+
+    await contract.getResult();
+
+    await instace2.play(1, {value: DEFAULT_BID});
+
+    await contract.getResult();
+
+    await contract.getLeaderboard();
+
+
+BSC Test deploy, packge.json:     "deploy:bsc": "npx hardhat run scripts/deploy.ts --network bsctest"
+
+    npm run deploy:bsc
+
+ImplementationAddress deployed at 0xd70c9B9B3D158eC5B93a9E6202c5f3B3D59e9c9D
+AdapterAddress deployed at 0x764623ecADacd8E928DC354B6F23a6db02a8530b
+Adapter was upgraded.
+
+Verification:
+
+npx hardhat verify --network bsctest 0x764623ecADacd8E928DC354B6F23a6db02a8530b
+
+https://testnet.bscscan.com/address/0x764623ecADacd8E928DC354B6F23a6db02a8530b#code

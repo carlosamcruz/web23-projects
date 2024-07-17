@@ -15,7 +15,7 @@ contract JKPAdapter {
 
     }
 
-    function getAddress() external view returns(address){
+    function getImplementationAddress() external view returns(address){
         return address(joKenPo);
     }
 
