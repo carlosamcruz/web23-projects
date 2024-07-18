@@ -57,3 +57,12 @@ Verification:
 npx hardhat verify --network bsctest 0x764623ecADacd8E928DC354B6F23a6db02a8530b
 
 https://testnet.bscscan.com/address/0x764623ecADacd8E928DC354B6F23a6db02a8530b#code
+
+
+FRONTEND:
+
+ir para a pasta root:
+
+npx create-react-app@latest frontend --template typescript
+
+npm i web3
