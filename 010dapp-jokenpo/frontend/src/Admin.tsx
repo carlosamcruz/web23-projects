@@ -2,15 +2,15 @@ import React from 'react';
 import Header from './Header';
 
 
-function App() {
+function Admin() {
   return (
     <div className='container'>
         <Header />
         <main>
-          App Page
+            Admin Page
         </main>
     </div>
   );
 }
 
-export default App;
+export default Admin;

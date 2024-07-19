@@ -1,21 +1,35 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { doLogin } from './Web3Service';
 
 function Login() {
+
+  const navigate = useNavigate();
 
   const [message, setMessage] = useState("");
 
   useEffect(() => {
 
     if(localStorage.getItem("account") !== null)
-      alert("Já está autenticado.")
+      redirectAfterLogin(localStorage.getItem("isAdmin") === "true")
+      //alert("Já está autenticado.")
 
   }, []);
+
+  function redirectAfterLogin(isAdmin: boolean){
+
+    if(isAdmin)
+      navigate("/admin");
+    else
+      navigate("/app");
+
+  }
  
   function onBtnClick(){
     setMessage("Logging in ...");
     doLogin()
-        .then(result => alert(JSON.stringify(result)))
+        //.then(result => alert(JSON.stringify(result)))
+        .then(result => redirectAfterLogin(result.isAdmin))
         .catch(err => setMessage(err.message));
   }
 

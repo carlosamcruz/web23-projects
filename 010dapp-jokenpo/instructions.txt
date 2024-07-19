@@ -66,3 +66,6 @@ ir para a pasta root:
 npx create-react-app@latest frontend --template typescript
 
 npm i web3
+
+
+npm i react-router-dom
