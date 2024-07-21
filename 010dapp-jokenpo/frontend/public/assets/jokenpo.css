@@ -126,3 +126,11 @@ body {
   color: #fff;
   border-bottom-color: #fff;
 }
+
+.play-button {
+  cursor: pointer;
+}
+
+.play-button:hover {
+  background-color: #0d6efd !important;
+}

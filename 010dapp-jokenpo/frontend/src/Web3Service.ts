@@ -3,6 +3,7 @@ import { AbiItem } from "web3-utils";
 import { Contract } from "web3-eth-contract";
 import ABI from "./abi.json";
 import { AbiType } from "./AbiType";
+import { get } from "http";
 
 const ADAPTER_ADDRESS = `${process.env.REACT_APP_CONTRACT}`
 
@@ -94,4 +95,43 @@ export async function setBid(newBid: string): Promise<string>{
     const contract = getContract();
     const tx = await contract.methods.setBid(newBid).send();
     return tx.transactionHash;
+}
+
+export type Players = {
+    wallet: string;
+    wins: bigint;
+}
+
+export type Leaderboard = {
+    player?: Players[];
+    result?: string;
+}
+
+export enum Options {
+    NONAME = 0,
+    ROCK = 1,
+    PAPER = 2,
+    SCISSORS = 3
+} // 0, 1, 2, 3 - definir os números de forma explicita é opcional
+
+export async function play(option: Options) : Promise <string>{
+    const web3 = getWeb3();
+    const contract = getContract(web3);
+    const bid = await contract.methods.getBid().call();
+    //const tx = await contract.methods.play(option).send({value: web3.utils.toWei("0.01", "ether")});
+    const tx = await contract.methods.play(option).send({value: String(bid)});
+    return tx.transactionHash;
+}
+
+export async function getResult() : Promise <string>{
+    const contract = getContract();
+    return await contract.methods.getResult().call();
+}
+
+export async function getLeaderboard(): Promise <Leaderboard>{
+    const contract = getContract();
+    const players = await contract.methods.getLeaderboard().call();
+    const result = await contract.methods.getResult().call();
+
+    return {players, result} as Leaderboard;
 }
