@@ -57,7 +57,7 @@ contract JKPAdapter {
 
 
     modifier restricted() {
-        require(msg.sender != owner, "You do not have permission");
+        require(msg.sender == owner, "You do not have permission");
         _;
     }    
 

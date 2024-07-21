@@ -48,15 +48,19 @@ BSC Test deploy, packge.json:     "deploy:bsc": "npx hardhat run scripts/deploy.
 
     npm run deploy:bsc
 
-ImplementationAddress deployed at 0xd70c9B9B3D158eC5B93a9E6202c5f3B3D59e9c9D
-AdapterAddress deployed at 0x764623ecADacd8E928DC354B6F23a6db02a8530b
+ImplementationAddress deployed at 0xb465002B90ec92da5b4E657C48e4581D6f958395
+AdapterAddress deployed at 0x49a630E03905d7Efd8eA4bcCBF160B541E059Eec
 Adapter was upgraded.
 
 Verification:
 
-npx hardhat verify --network bsctest 0x764623ecADacd8E928DC354B6F23a6db02a8530b
+npx hardhat verify --network bsctest 0x49a630E03905d7Efd8eA4bcCBF160B541E059Eec
 
-https://testnet.bscscan.com/address/0x764623ecADacd8E928DC354B6F23a6db02a8530b#code
+https://testnet.bscscan.com/address/0x49a630E03905d7Efd8eA4bcCBF160B541E059Eec#code
+
+
+Set Comission:
+npx hardhat run scripts/testUpdate.ts --network bsctest
 
 
 FRONTEND:

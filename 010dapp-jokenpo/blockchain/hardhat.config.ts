@@ -32,7 +32,7 @@ const config: HardhatUserConfig = {
     apiKey: process.env.API_KEY_BSC
   },
   sourcify: {
-    enabled: true
+    enabled: false
   }
 
 };
