@@ -103,7 +103,7 @@ export type Players = {
 }
 
 export type Leaderboard = {
-    player?: Players[];
+    players?: Players[];
     result?: string;
 }
 

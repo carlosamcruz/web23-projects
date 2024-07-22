@@ -38,7 +38,26 @@ function App() {
             <div className='row'>
 
               <div className='col-sm-6'>
-                <h4 className='mb-3'>Leaderboard</h4>
+                <h4 className='mb-3'>Best Players</h4>
+                <div className='card card-body border-0 shadow table-wrapper table-responsive'>
+                  <table className='table table-hover'>
+                    <thead>
+                      <tr>
+                        <th className='boarder-grey-200'>Player</th>
+                        <th className='boarder-grey-200'>Wins</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {
+                        leaderboard && leaderboard.players && leaderboard.players.length
+                        ?leaderboard.players.map(p => (<tr key={p.wallet}><td>{p.wallet}</td><td>{Number(p.wins)}</td></tr>))
+                        :<tr><td colSpan={2}>Loading ...</td></tr>
+                      }
+                    </tbody>
+
+                  </table>
+
+                </div>
               </div>
               <div className='col-sm-6'>
                 <h4 className='mb-3'>Games</h4>
