@@ -63,6 +63,20 @@ Set Comission:
 npx hardhat run scripts/testUpdate.ts --network bsctest
 
 
+//Deploy com EVENT
+
+npx hardhat compile
+
+npm run deploy:bsc
+
+ImplementationAddress deployed at 0x6d4Dc59Fb88CECeCF61f165bf632E2332Ba736F0
+AdapterAddress deployed at 0x3dF13F8CbB3E0cd1312CAa415a89CF2Ac3ECaB3c
+Adapter was upgraded.
+
+npx hardhat verify --network bsctest 0x3dF13F8CbB3E0cd1312CAa415a89CF2Ac3ECaB3c
+
+https://testnet.bscscan.com/address/0x3dF13F8CbB3E0cd1312CAa415a89CF2Ac3ECaB3c#code
+
 FRONTEND:
 
 ir para a pasta root:

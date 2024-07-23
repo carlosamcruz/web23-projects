@@ -9,6 +9,10 @@ contract JKPAdapter {
 
     address public immutable owner;
 
+    //Avisar os jogadores interessados que houve uma jogada;
+    event Played(address indexed player, string result);
+    //indexed custa mais caro
+
     constructor(){
 
         owner = msg.sender;
@@ -48,7 +52,10 @@ contract JKPAdapter {
 
 
     function play(JKPLibrary.Options newChoice) external payable upgraded{
-        return joKenPo.play{ value: msg.value }(newChoice);
+
+        //return joKenPo.play{ value: msg.value }(newChoice);
+        string memory result = joKenPo.play{ value: msg.value }(newChoice);
+        emit Played(msg.sender, result);
     }
 
     function getLeaderboard() external view upgraded returns (JKPLibrary.Player[] memory) {

@@ -90,7 +90,13 @@ export type AbiTypeJKP = [
       }
     ],
     "name": "play",
-    "outputs": [],
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      }
+    ],
     "stateMutability": "payable",
     "type": "function"
   },

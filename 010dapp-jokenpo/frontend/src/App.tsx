@@ -1,13 +1,43 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
 import Header from './Header';
-import { Leaderboard, Options, play, getResult, getLeaderboard } from './Web3Service';
+import { Leaderboard, Options, play, getResult, getLeaderboard, listenEvent, getBestPlayers } from './Web3Service';
 
 
 function App() {
   const [message, setMessage] = useState("");
   const [leaderboard, setLeaderboard] = useState<Leaderboard>();
 
+
+  //com event
+  useEffect(()=>{
+    getLeaderboard()
+      .then(leaderboard => setLeaderboard(leaderboard))
+      .catch(err => setMessage(err.message));
+
+    //listenEvent((result: string) => setLeaderboard({...leaderboard, result}));
+
+    
+    listenEvent((result: string) => {
+      getBestPlayers()
+        .then(players => setLeaderboard({players, result} as Leaderboard))
+        .catch(err => setMessage(err.message));
+      
+    });
+    
+
+  }, []);
+
+  function onPlay(option: Options){
+    setLeaderboard({...leaderboard, result: "sending your choice ..."});
+    play(option)
+      //.then(tx => getResult())
+      //.then(result => setLeaderboard({...leaderboard, result}))
+      .catch(err => setMessage(err.message));
+  }
+
+  /*
+  //Sem event
   useEffect(()=>{
     getLeaderboard()
       .then(leaderboard => setLeaderboard(leaderboard))
@@ -22,6 +52,7 @@ function App() {
       .then(result => setLeaderboard({...leaderboard, result}))
       .catch(err => setMessage(err.message));
   }
+  */
 
   return (
     <div className='container'>

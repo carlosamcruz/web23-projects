@@ -4,6 +4,7 @@ import { Contract } from "web3-eth-contract";
 import ABI from "./abi.json";
 import { AbiType } from "./AbiType";
 import { get } from "http";
+import { contract } from "web3/lib/commonjs/eth.exports";
 
 const ADAPTER_ADDRESS = `${process.env.REACT_APP_CONTRACT}`
 
@@ -134,4 +135,19 @@ export async function getLeaderboard(): Promise <Leaderboard>{
     const result = await contract.methods.getResult().call();
 
     return {players, result} as Leaderboard;
+}
+
+export async function getBestPlayers(): Promise <Leaderboard>{
+    const contract = getContract();
+    return await contract.methods.getLeaderboard().call();
+}
+
+export function listenEvent(callback: Function){
+
+    const web3 = new Web3(`${process.env.REACT_APP_WEBSOCKET_SERVER}`);
+    const contract = getContract(web3);
+
+    contract.events.Played({fromBlock: "latest"})
+        .on("data", (event: any) => callback(event.returnValues.result));
+
 }

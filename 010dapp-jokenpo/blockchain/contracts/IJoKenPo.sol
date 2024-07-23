@@ -20,7 +20,7 @@ interface IJoKenPo{
 
     function getBalance() external view returns (uint);
 
-    function play(JKPLibrary.Options newChoice) external payable;
+    function play(JKPLibrary.Options newChoice) external payable returns(string memory);
 
     function getLeaderboard() external view returns (JKPLibrary.Player[] memory);
 }
