@@ -1,0 +1,34 @@
+npm init -y
+npm i -D hardhat
+npx hardhat init
+
+npx hardhat compile
+
+package.json 
+
+    "test": "npx hardhat test"
+
+
+npm test
+
+npx hardhat node
+
+package.json 
+
+    "start": "npx hardhat node"
+    "deploy": "npx hardhat ignition deploy ignition/modules/BookDatabase.ts --network local"
+
+npm run deploy    
+
+npx hardhat console (M2 L5 Aula 8)
+
+npm i dotenv
+
+    "deploylocal": "npx hardhat ignition deploy ignition/modules/BookDatabase.ts --network local",
+    "deploysepolia": "npx hardhat ignition deploy ignition/modules/BookDatabase.ts --network sepolia"
+
+    npm run deploysepolia
+
+npm i -D @nomiclabs/hardhat-etherscan    
+
+npx hardhat verify --network sepolia 0x80e85F53abCEAFE44D887579a8eDF764caA36840
