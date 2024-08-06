@@ -1,0 +1,11 @@
+Aula 06
+
+Solididty Coverage em Blockchain:
+
+npm i -D solidity-coverage
+
+hardhat.config.ts
+
+import "solidity-coverage";
+
+npx hardhat coverage

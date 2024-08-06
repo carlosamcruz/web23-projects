@@ -15,6 +15,10 @@ contract CondominiumAdapter {
         owner = msg.sender;
     }
 
+    function getAddressImplementation() external view returns(address){
+        return address(implementation);
+    }
+
     function update(address newImplementation) external {
         require(msg.sender == owner, "You do not have permission");
         implementation = ICondominium(newImplementation);
