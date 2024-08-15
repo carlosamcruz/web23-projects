@@ -66,10 +66,15 @@ contract Condominium is ICondominium {
         _;
     }
 
-    modifier onlyResidents {
+    modifier onlyResidents () {
         require(tx.origin == manager || isResident(tx.origin), "Only the manager or the residents can do this");
         _;
     }
+
+    modifier validAddress (address add) {
+        require(add != address(0), "Invalid address");
+        _;
+    }    
 
     function residenceExists(uint16 residenceId) public view returns(bool){
         return residences[residenceId];
@@ -79,7 +84,7 @@ contract Condominium is ICondominium {
         return residents[resident] > 0;
     }
 
-    function addResident (address resident, uint16 residenceId) external onlyCouncil {
+    function addResident (address resident, uint16 residenceId) external onlyCouncil validAddress(resident){
         require(residenceExists(residenceId), "This residence does not exist");
         residents[resident] = residenceId;
     }
@@ -90,7 +95,7 @@ contract Condominium is ICondominium {
         delete residents[resident];
     }
 
-    function setCounselor (address resident, bool isEntering) external onlyManager{
+    function setCounselor (address resident, bool isEntering) external onlyManager validAddress(resident){
         if(isEntering)
         {
             require(isResident(resident), "The counselor must be a resident");
@@ -118,7 +123,8 @@ contract Condominium is ICondominium {
         return getTopic(title).createDate > 0;
     }
 
-    function addTopic(string memory title, string memory description, Lib.Category category, uint amount, address responsible) external onlyResidents{
+    function addTopic(string memory title, string memory description, Lib.Category category, uint amount, address responsible) 
+    external onlyResidents {
         require(!topicExists(title), "This topic already exists");
         if(amount > 0)
         {
@@ -137,6 +143,23 @@ contract Condominium is ICondominium {
         });
 
         topics[keccak256(bytes(title))] = newTopic;
+    }
+
+    function editTopic(string memory titleToEdit, string memory description, uint amount, address responsible) external onlyManager{
+        Lib.Topic memory topic = getTopic(titleToEdit);
+        require(topic.createDate > 0, "Topic does not exist");
+        require(topic.status == Lib.Status.IDLE, "Only IDLE topics can be edited" );
+
+        bytes32 topicID = keccak256(bytes(titleToEdit));
+
+        if(bytes(description).length > 0)
+            topics[topicID].description = description;
+        if(amount >= 0){
+            require(topics[topicID].category == Lib.Category.SPENT || topics[topicID].category == Lib.Category.CHANGE_QUOTA, "Topic cannot change value");
+            topics[topicID].amount = amount;            
+        }
+        if((topics[topicID].responsible != responsible) && (responsible != address(0)))
+            topics[topicID].responsible = responsible;
     }
 
     function removeTopic(string memory title) external onlyManager{
@@ -172,8 +195,9 @@ contract Condominium is ICondominium {
         Lib.Vote[] memory votes = votings[topicId];
 
         for(uint8 i = 0; i < votes.length; i++){
-            if(votes[i].residence == residence)
-                require(false, "A residence should vote only once");
+            //if(votes[i].residence == residence)
+            //    require(false, "A residence should vote only once");
+            require(votes[i].residence != residence, "A residence should vote only once");
         }
 
         Lib.Vote memory newVote = Lib.Vote({

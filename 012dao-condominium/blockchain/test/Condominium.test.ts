@@ -1,6 +1,6 @@
 import { loadFixture } from "@nomicfoundation/hardhat-toolbox/network-helpers";
 import { expect } from "chai";
-import hre from "hardhat";
+import hre, { ethers } from "hardhat";
 import { Bytecode } from "hardhat/internal/hardhat-network/stack-traces/model";
 import {SignerWithAddress} from "@nomicfoundation/hardhat-ethers/signers";
 import { Condominium } from "../typechain-types";
@@ -31,14 +31,14 @@ describe("Condominium", function () {
   async function addResidents(contract: Condominium, count: number, accounts: SignerWithAddress[]){
     for(let i = 1; i <= count; i++){
       const residentId = 1000*Math.ceil(i/25) + 100*Math.ceil(i/5) + (i - (5*Math.floor((i-1)/5)));
-      await contract.addResident(accounts[i].address,  residentId);
+      await contract.addResident(accounts[i-1].address,  residentId);
     }
   }
 
-  async function addVotes(contract: Condominium, count: number, accounts: SignerWithAddress[]){
+  async function addVotes(contract: Condominium, count: number, accounts: SignerWithAddress[], option: Options){
     for(let i = 1; i <= count; i++){
-      const instance = contract.connect(accounts[i]);
-      await instance.vote("topic 1", Options.YES);
+      const instance = contract.connect(accounts[i-1]);
+      await instance.vote("topic 1", option);
     }
   }
   
@@ -138,7 +138,23 @@ describe("Condominium", function () {
 
     await contract.setCounselor(resident.address, true);
 
+    const instance = contract.connect(resident);
+
+    await instance.addResident(manager.address, 2103);
+
     expect(await contract.counselors(resident.address)).to.equal(true);
+
+  });
+
+  it("Should delete counselor", async function () {
+    const { contract, manager, resident } = await loadFixture(deployCondominiumFixture);
+
+    await contract.addResident(resident.address, 2102);
+
+    await contract.setCounselor(resident.address, true);
+    await contract.setCounselor(resident.address, false);
+
+    expect(await contract.counselors(resident.address)).to.equal(false);
 
   });
 
@@ -200,6 +216,130 @@ describe("Condominium", function () {
 
   */
 
+  it("Should change manager", async function () {
+    const { contract, manager, resident, accounts } = await loadFixture(deployCondominiumFixture);
+      
+    const instance = contract.connect(resident);
+    //await contract.addResident(resident.address, 2102);
+
+    await addResidents(contract, 15, accounts);
+      
+    await contract.addTopic("topic 1", "desciption 1", Category.CHANGE_MANAGER, 0, accounts[10].address);
+    await contract.openVoting("topic 1");
+    //await contract.vote("topic 1", Options.YES);    
+    //await instance.vote("topic 1", Options.YES);
+    await addVotes(contract, 15, accounts, Options.YES);
+
+
+    await contract.closeVoting("topic 1");
+
+    //const topic = await contract.getTopic("topic 1")
+
+    //expect(topic.status).to.equal(Status.APPROVED);
+    expect(await contract.manager()).to.equal(accounts[10].address);
+
+  });
+
+  it("Should change quota", async function () {
+    const { contract, manager, resident, accounts } = await loadFixture(deployCondominiumFixture);
+      
+    const instance = contract.connect(resident);
+    //await contract.addResident(resident.address, 2102);
+
+    await addResidents(contract, 20, accounts);
+    
+    const value = hre.ethers.parseEther("0.02")
+    await contract.addTopic("topic 1", "desciption 1", Category.CHANGE_QUOTA, value, manager.address);
+    await contract.openVoting("topic 1");
+    //await contract.vote("topic 1", Options.YES);    
+    //await instance.vote("topic 1", Options.YES);
+    await addVotes(contract, 20, accounts, Options.YES);
+
+
+    await contract.closeVoting("topic 1");
+
+    //const topic = await contract.getTopic("topic 1")
+
+    //expect(topic.status).to.equal(Status.APPROVED);
+    expect(await contract.monthlyQuota()).to.equal(value);
+
+  });
+
+  it("Should spend", async function () {
+    const { contract, manager, resident, accounts } = await loadFixture(deployCondominiumFixture);
+      
+    const instance = contract.connect(resident);
+    //await contract.addResident(resident.address, 2102);
+
+    await addResidents(contract, 10, accounts);
+    
+    const value = hre.ethers.parseEther("0.02")
+    await contract.addTopic("topic 1", "desciption 1", Category.SPENT, value, manager.address);
+    await contract.openVoting("topic 1");
+    //await contract.vote("topic 1", Options.YES);    
+    //await instance.vote("topic 1", Options.YES);
+    await addVotes(contract, 10, accounts, Options.YES);
+
+
+    await contract.closeVoting("topic 1");
+
+    const topic = await contract.getTopic("topic 1")
+
+    expect(topic.status).to.equal(Status.APPROVED);
+    //expect(await contract.monthlyQuota()).to.equal(value);
+
+  });
+
+  it("Should NOT spend", async function () {
+    const { contract, manager, resident, accounts } = await loadFixture(deployCondominiumFixture);
+      
+    const instance = contract.connect(resident);
+    //await contract.addResident(resident.address, 2102);
+
+    await addResidents(contract, 10, accounts);
+    
+    const value = hre.ethers.parseEther("0.02")
+    await contract.addTopic("topic 1", "desciption 1", Category.SPENT, value, manager.address);
+    await contract.openVoting("topic 1");
+    //await contract.vote("topic 1", Options.YES);    
+    //await instance.vote("topic 1", Options.YES);
+    await addVotes(contract, 10, accounts, Options.NO);
+
+
+    await contract.closeVoting("topic 1");
+
+    const topic = await contract.getTopic("topic 1")
+
+    expect(topic.status).to.equal(Status.DENIED);
+    //expect(await contract.monthlyQuota()).to.equal(value);
+
+  });
+
+  it("Should NOT spend (abstention)", async function () {
+    const { contract, manager, resident, accounts } = await loadFixture(deployCondominiumFixture);
+      
+    const instance = contract.connect(resident);
+    //await contract.addResident(resident.address, 2102);
+
+    await addResidents(contract, 10, accounts);
+    
+    const value = hre.ethers.parseEther("0.02")
+    await contract.addTopic("topic 1", "desciption 1", Category.SPENT, value, manager.address);
+    await contract.openVoting("topic 1");
+    //await contract.vote("topic 1", Options.YES);    
+    //await instance.vote("topic 1", Options.YES);
+    await addVotes(contract, 10, accounts, Options.ABSTENTION);
+
+
+    await contract.closeVoting("topic 1");
+
+    const topic = await contract.getTopic("topic 1")
+
+    expect(topic.status).to.equal(Status.DENIED);
+    //expect(await contract.monthlyQuota()).to.equal(value);
+
+  });
+
 
   it("Should add topic (manager)", async function () {
     const { contract, manager, resident } = await loadFixture(deployCondominiumFixture);
@@ -207,6 +347,13 @@ describe("Condominium", function () {
     await contract.addTopic("topic 1", "desciption 1", Category.DECISION, 0, manager.address);
 
     expect(await contract.topicExists("topic 1")).to.equal(true);
+  });
+
+  it("Should NOT add topic (amount)", async function () {
+    const { contract, manager, resident } = await loadFixture(deployCondominiumFixture);
+
+    await expect(contract.addTopic("topic 1", "desciption 1", Category.DECISION, 10, manager.address))
+      .to.be.revertedWith("Wrong category");
   });
 
   it("Should add topic (resident)", async function () {
@@ -414,7 +561,7 @@ describe("Condominium", function () {
     await contract.openVoting("topic 1");
     //await contract.vote("topic 1", Options.YES);    
     //await instance.vote("topic 1", Options.YES);
-    await addVotes(contract, 5, accounts);
+    await addVotes(contract, 5, accounts, Options.YES);
 
 
     await contract.closeVoting("topic 1");
@@ -422,6 +569,25 @@ describe("Condominium", function () {
     const topic = await contract.getTopic("topic 1")
 
     expect(topic.status).to.equal(Status.APPROVED);
+  }); 
+
+  it("Should NOT close voting (minimum)", async function () {
+    const { contract, manager, resident, accounts } = await loadFixture(deployCondominiumFixture);
+      
+    const instance = contract.connect(resident);
+    //await contract.addResident(resident.address, 2102);
+
+    await addResidents(contract, 5, accounts);
+      
+    await contract.addTopic("topic 1", "desciption 1", Category.DECISION, 0, manager.address);
+    await contract.openVoting("topic 1");
+    //await contract.vote("topic 1", Options.YES);    
+    //await instance.vote("topic 1", Options.YES);
+    await addVotes(contract, 4, accounts, Options.YES);
+
+
+    await expect(contract.closeVoting("topic 1"))
+      .to.be.revertedWith("You cannot finish a topic without the minimum number of votes");
   }); 
 
   it("Should NOT close voting (permission)", async function () {

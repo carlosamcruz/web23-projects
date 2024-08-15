@@ -14,10 +14,9 @@ interface ICondominium {
     //TODO: mudar
     //function setManager(address newManager) external;
 
-    //TODO: mudar
     function addTopic(string memory title, string memory description, Lib.Category category, uint amount, address responsible) external;
 
-    //TODO: edit topic
+    function editTopic(string memory titleToEdit, string memory description, uint amount, address responsible) external;
 
     function removeTopic(string memory title) external;
 
