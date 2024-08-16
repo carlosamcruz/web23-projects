@@ -154,7 +154,7 @@ contract Condominium is ICondominium {
 
         if(bytes(description).length > 0)
             topics[topicID].description = description;
-        if(amount >= 0){
+        if(amount >= 0 && amount != topics[topicID].amount){
             require(topics[topicID].category == Lib.Category.SPENT || topics[topicID].category == Lib.Category.CHANGE_QUOTA, "Topic cannot change value");
             topics[topicID].amount = amount;            
         }
