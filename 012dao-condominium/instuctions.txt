@@ -9,3 +9,6 @@ hardhat.config.ts
 import "solidity-coverage";
 
 npx hardhat coverage
+
+Ao instalar o ambiente em uma nova maquina, devemos instalar o Visual C++
+https://ethereum.stackexchange.com/questions/161395/i-got-an-critical-error-when-i-deploy-my-contract-in-hardhat

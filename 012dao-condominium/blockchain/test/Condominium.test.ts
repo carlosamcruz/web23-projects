@@ -32,6 +32,8 @@ describe("Condominium", function () {
     for(let i = 1; i <= count; i++){
       const residentId = 1000*Math.ceil(i/25) + 100*Math.ceil(i/5) + (i - (5*Math.floor((i-1)/5)));
       await contract.addResident(accounts[i-1].address,  residentId);
+      const instance = contract.connect(accounts[i-1]);
+      await instance.payQuota(residentId, {value: hre.ethers.parseEther("0.01")});
     }
   }
 
@@ -376,7 +378,7 @@ describe("Condominium", function () {
     const instance = contract.connect(resident);
 
     await contract.addResident(resident.address, 2102);
-
+    await contract.payQuota(2102, {value: hre.ethers.parseEther("0.01")});
 
     await instance.addTopic("topic 1", "desciption 1", Category.DECISION, 0, manager.address);
 
@@ -506,6 +508,7 @@ describe("Condominium", function () {
 
     const instance = contract.connect(resident);
     await contract.addResident(resident.address, 2102);
+    await contract.payQuota(2102, {value: hre.ethers.parseEther("0.01")});    
 
     await contract.addTopic("topic 1", "desciption 1", Category.DECISION, 0, manager.address);
     await contract.openVoting("topic 1");
@@ -528,6 +531,7 @@ describe("Condominium", function () {
   
     const instance = contract.connect(resident);
     await contract.addResident(resident.address, 2102);
+    await contract.payQuota(2102, {value: hre.ethers.parseEther("0.01")});    
   
     await contract.addTopic("topic 1", "desciption 1", Category.DECISION, 0, manager.address);
     await contract.openVoting("topic 1");
@@ -546,6 +550,7 @@ describe("Condominium", function () {
     
     const instance = contract.connect(resident);
     await contract.addResident(resident.address, 2102);
+    await contract.payQuota(2102, {value: hre.ethers.parseEther("0.01")});    
     
     await contract.addTopic("topic 1", "desciption 1", Category.DECISION, 0, manager.address);
     await contract.openVoting("topic 1");
@@ -562,6 +567,7 @@ describe("Condominium", function () {
       
     const instance = contract.connect(resident);
     await contract.addResident(resident.address, 2102);
+    await contract.payQuota(2102, {value: hre.ethers.parseEther("0.01")});    
       
     await contract.addTopic("topic 1", "desciption 1", Category.DECISION, 0, manager.address);
     //await contract.openVoting("topic 1");
@@ -577,6 +583,7 @@ describe("Condominium", function () {
       
     const instance = contract.connect(resident);
     await contract.addResident(resident.address, 2102);
+    await contract.payQuota(2102, {value: hre.ethers.parseEther("0.01")});    
       
     //await contract.addTopic("topic 1", "desciption 1");
     //await contract.openVoting("topic 1");
@@ -607,6 +614,7 @@ describe("Condominium", function () {
       
     const instance = contract.connect(resident);
     await contract.addResident(resident.address, 2102);
+    await contract.payQuota(2102, {value: hre.ethers.parseEther("0.01")});    
       
     await contract.addTopic("topic 1", "desciption 1", Category.DECISION, 0, manager.address);
     await contract.openVoting("topic 1");
@@ -663,6 +671,7 @@ describe("Condominium", function () {
       
     const instance = contract.connect(resident);
     await contract.addResident(resident.address, 2102);
+    await contract.payQuota(2102, {value: hre.ethers.parseEther("0.01")});    
       
     await contract.addTopic("topic 1", "desciption 1", Category.DECISION, 0, manager.address);
     await contract.openVoting("topic 1");
