@@ -11,7 +11,8 @@ describe("Condominium", function () {
     IDLE,
     VOLTING,
     APPROVED,
-    DENIED
+    DENIED,
+    SPENT
   }// 0, 1, 2 3
 
   enum Options{
@@ -561,6 +562,21 @@ describe("Condominium", function () {
       .to.be.revertedWith("A residence should vote only once");
   });  
 
+  it("Should NOT vote (defaulter)", async function () {
+    const { contract, manager, resident } = await loadFixture(deployCondominiumFixture);
+    
+    const instance = contract.connect(resident);
+    await contract.addResident(resident.address, 2102);
+    await contract.addResident(resident.address, 2101);
+    //await contract.payQuota(2102, {value: hre.ethers.parseEther("0.01")});    
+    
+    await contract.addTopic("topic 1", "desciption 1", Category.DECISION, 0, manager.address);
+    await contract.openVoting("topic 1");
+         
+    await expect(instance.vote("topic 1", Options.YES))
+      .to.be.revertedWith("The resident must be defaulter");
+  });  
+
 
   it("Should NOT vote (status)", async function () {
     const { contract, manager, resident } = await loadFixture(deployCondominiumFixture);
@@ -758,5 +774,109 @@ describe("Condominium", function () {
     await expect(contract.openVoting("topic 1"))
       .to.be.revertedWith("Topic does not exist");
   }); 
+
+  it("Should NOT pay quota (residence)", async function () {
+    const { contract, manager, resident } = await loadFixture(deployCondominiumFixture);
+      
+    const instance = contract.connect(resident);
+    //await contract.addResident(resident.address, 2102);
+    
+    await expect(instance.payQuota(9999, {value: hre.ethers.parseEther("0.01")}))
+      .to.be.revertedWith("The residence does not exist");
+  }); 
+
+  it("Should NOT pay quota (value)", async function () {
+    const { contract, manager, resident } = await loadFixture(deployCondominiumFixture);
+      
+    const instance = contract.connect(resident);
+    await contract.addResident(resident.address, 2102);
+    
+    await expect(instance.payQuota(2102, {value: hre.ethers.parseEther("0.001")}))
+      .to.be.revertedWith("Wrong value");
+  }); 
+
+  it("Should NOT pay quota (double payment)", async function () {
+    const { contract, manager, resident } = await loadFixture(deployCondominiumFixture);
+      
+    const instance = contract.connect(resident);
+    await contract.addResident(resident.address, 2102);
+    await instance.payQuota(2102, {value: hre.ethers.parseEther("0.01")});
+    
+    await expect(instance.payQuota(2102, {value: hre.ethers.parseEther("0.01")}))
+      .to.be.revertedWith("You cannot pay twice a month");
+  }); 
+
+
+  it("Should NOT tranfer (manager)", async function () {
+    const { contract, manager, resident, accounts} = await loadFixture(deployCondominiumFixture);
+
+    //Valor deve ser em wei
+    await contract.addTopic("topic 1", "description 1", Category.SPENT, 100, accounts[19].address);
+
+    await contract.openVoting("topic 1");
+    await addResidents(contract, 10, accounts);
+
+    await addVotes(contract, 10, accounts, Options.YES);
+
+    await contract.closeVoting("topic 1");
+
+    const instance = contract.connect(resident);
+
+    await expect(instance.transfer("topic 1", 50))
+      .to.be.rejectedWith("Only the manager can do this");
+
+  });
+
+  it("Should NOT tranfer (balance)", async function () {
+    const { contract, manager, resident, accounts} = await loadFixture(deployCondominiumFixture);
+
+    await expect(contract.transfer("topic 1", 50))
+      .to.be.rejectedWith("Insufficient funds");
+
+  });
+
+  it("Should NOT tranfer (topic)", async function () {
+    const { contract, manager, resident, accounts} = await loadFixture(deployCondominiumFixture);
+
+    await expect(contract.transfer("topic 1", 0))
+      .to.be.rejectedWith("Topic does not exist");
+
+  });
+
+  it("Should NOT tranfer (status)", async function () {
+    const { contract, manager, resident, accounts} = await loadFixture(deployCondominiumFixture);
+
+    //Valor deve ser em wei
+    await contract.addTopic("topic 1", "description 1", Category.SPENT, 100, accounts[19].address);
+
+    await contract.openVoting("topic 1");
+    await addResidents(contract, 10, accounts);
+
+    await addVotes(contract, 10, accounts, Options.YES);
+
+    //await contract.closeVoting("topic 1");
+
+    await expect(contract.transfer("topic 1", 50))
+      .to.be.rejectedWith("Only APPROVED STPENT topics allowed");
+
+  });
+
+  it("Should NOT tranfer (amount)", async function () {
+    const { contract, manager, resident, accounts} = await loadFixture(deployCondominiumFixture);
+
+    //Valor deve ser em wei
+    await contract.addTopic("topic 1", "description 1", Category.SPENT, 100, accounts[19].address);
+
+    await contract.openVoting("topic 1");
+    await addResidents(contract, 10, accounts);
+
+    await addVotes(contract, 10, accounts, Options.YES);
+
+    await contract.closeVoting("topic 1");
+
+    await expect(contract.transfer("topic 1", 500))
+      .to.be.rejectedWith("Amount must be less or equal the approved amount");
+
+  });
 
 });

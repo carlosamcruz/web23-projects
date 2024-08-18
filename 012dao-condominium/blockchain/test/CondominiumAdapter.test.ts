@@ -11,7 +11,8 @@ describe("CondominiumAdapter", function () {
     IDLE,
     VOLTING,
     APPROVED,
-    DENIED
+    DENIED,
+    SPENT
   }// 0, 1, 2 3
 
   enum Options{
@@ -74,13 +75,21 @@ describe("CondominiumAdapter", function () {
     expect(await contract.getAddress()).to.equal(address);
   });
 
-  it("Should NOT upgrade", async function () {
+  it("Should NOT upgrade (permission)", async function () {
     const { adapter, manager, accounts } = await loadFixture(deployAdapterFixture);
     const { contract } = await loadFixture(deployImplementationFixture);
 
     const instance = adapter.connect(accounts[1]);
     await expect(instance.update(await contract.getAddress())).to.revertedWith("You do not have permission");
   });
+
+  it("Should NOT upgrade (address)", async function () {
+    const { adapter, manager, accounts } = await loadFixture(deployAdapterFixture);
+    
+    //await expect(adapter.update("0x0000000000000000000000000000000000000000")).to.revertedWith("Invalid Address");
+    await expect(adapter.update(hre.ethers.ZeroAddress)).to.revertedWith("Invalid Address");
+  });
+
 
   it("Should add resident", async function () {
     const { adapter, manager, accounts } = await loadFixture(deployAdapterFixture);
@@ -285,6 +294,53 @@ describe("CondominiumAdapter", function () {
     await expect(adapter.closeVoting("topic 1"))
       .to.be.revertedWith("You must upgrade first");
   });
+
+  it("Should NOT pay quota (updated)", async function () {
+    const { adapter, manager, accounts } = await loadFixture(deployAdapterFixture);
+          
+    await expect(adapter.payQuota(2102, {value: hre.ethers.parseEther("0.01")}))
+      .to.be.revertedWith("You must upgrade first");
+  }); 
+
+
+  it("Should tranfer", async function () {
+    const { adapter, manager, accounts } = await loadFixture(deployAdapterFixture);
+    const { contract } = await loadFixture(deployImplementationFixture);
+
+    await adapter.update(await contract.getAddress());
+
+    //Valor deve ser em wei
+    await adapter.addTopic("topic 1", "description 1", Category.SPENT, 100, accounts[19].address);
+
+    await adapter.openVoting("topic 1");
+    await addResidents(adapter, 10, accounts);
+
+    await addVotes(adapter, 10, accounts);
+
+    await adapter.closeVoting("topic 1");
+
+    const balanceBefore = await hre.ethers.provider.getBalance(contract.getAddress());
+    const worderBefore = await hre.ethers.provider.getBalance(accounts[19].address);
+    await adapter.transfer("topic 1", 50);
+    const balanceAfter = await hre.ethers.provider.getBalance(contract.getAddress());
+    const worderAfter = await hre.ethers.provider.getBalance(accounts[19].address);
+
+    const topic = await contract.getTopic("topic 1");
+
+    expect(topic.status).to.equal(Status.SPENT);
+    //Não leva em consideração as taxas de rede
+    expect(balanceBefore - balanceAfter).to.equal(50);
+    expect(worderAfter - worderBefore).to.equal(50);
+
+  });
+
+  it("Should NOT trasnfer (updated)", async function () {
+    const { adapter, manager, accounts } = await loadFixture(deployAdapterFixture);
+          
+    await expect(adapter.transfer("topic 1", 100))
+      .to.be.revertedWith("You must upgrade first");
+  }); 
+
 
 
 

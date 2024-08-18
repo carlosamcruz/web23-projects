@@ -281,4 +281,19 @@ contract Condominium is ICondominium {
         require(block.timestamp > payments[residenceID] + (30 * 24 * 60 * 60), "You cannot pay twice a month");
         payments[residenceID] = block.timestamp;
     }
+
+    function transfer(string memory topicTitle, uint amount) external onlyManager{
+        require(address(this).balance >= amount, "Insufficient funds");
+        require(topicExists(topicTitle), "Topic does not exist");
+        Lib.Topic memory topic = getTopic(topicTitle);
+
+        require(topic.status == Lib.Status.APPROVED && topic.category == Lib.Category.SPENT, "Only APPROVED STPENT topics allowed");
+        require(topic.amount >= amount, "Amount must be less or equal the approved amount");
+
+        //Mudar o status para evitar reentrance
+        bytes32 topicID = keccak256(bytes(topicTitle));
+        topics[topicID].status = Lib.Status.SPENT;
+
+        payable(topic.responsible).transfer(amount);
+    }
 }
