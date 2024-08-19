@@ -9,9 +9,10 @@ describe("Condominium", function () {
 
   enum Status{
     IDLE,
-    VOLTING,
+    VOTING,
     APPROVED,
     DENIED,
+    DELETED,
     SPENT
   }// 0, 1, 2 3
 

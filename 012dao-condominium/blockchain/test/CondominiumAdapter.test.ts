@@ -9,9 +9,10 @@ describe("CondominiumAdapter", function () {
 
   enum Status{
     IDLE,
-    VOLTING,
+    VOTING,
     APPROVED,
     DENIED,
+    DELETED,
     SPENT
   }// 0, 1, 2 3
 
@@ -222,7 +223,7 @@ describe("CondominiumAdapter", function () {
 
     const topic = await contract.getTopic("topic 1");
 
-    expect(topic.status).to.equal(Status.VOLTING);
+    expect(topic.status).to.equal(Status.VOTING);
   });
 
   it("Should NOT open voting (upgraded)", async function () {
