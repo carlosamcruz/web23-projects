@@ -16,9 +16,22 @@ npx hardhat node
 package.json 
 
     "start": "npx hardhat node"
-    "deploy": "npx hardhat ignition deploy ignition/modules/BookDatabase.ts --network local"
+    "deploy:bsc": "npx hardhat run scripts/deploy.ts --network bsctest"
 
-npm run deploy    
+npm run deploy:bsc
+
+Contract deployed to: 0xbA9f67AE364953Ee25FD25b21926ba146c1a59f2
+CondominiumAdapter deployed to: 0xbfE664a0125f0D828DC0DaE1F15f3ee503B4B8d4
+CondominiumAdapter upgraded to: 0xbA9f67AE364953Ee25FD25b21926ba146c1a59f2
+
+npm i -D @nomiclabs/hardhat-etherscan    
+
+npx hardhat verify --network bsctest 0xbfE664a0125f0D828DC0DaE1F15f3ee503B4B8d4
+
+https://testnet.bscscan.com/address/0xbfE664a0125f0D828DC0DaE1F15f3ee503B4B8d4#code
+https://testnet.bscscan.com/address/0xbfE664a0125f0D828DC0DaE1F15f3ee503B4B8d4
+
+
 
 npx hardhat console (M2 L5 Aula 8)
 

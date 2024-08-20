@@ -5,7 +5,11 @@
   "scripts": {
     "test": "npx hardhat test",
     "coverage": "npx hardhat coverage",
-    "compile": "npx hardhat compile"
+    "compile": "npx hardhat compile",
+    "deploylocal": "npx hardhat ignition deploy ignition/modules/Condominium.ts --network local",
+    "deploysepolia": "npx hardhat ignition deploy ignition/modules/Condominium.ts --network sepolia",
+    "deployIgnition:bsc": "npx hardhat ignition deploy ignition/modules/Condominium.ts --network bsctest",
+    "deploy:bsc": "npx hardhat run scripts/deploy.ts --network bsctest"
   },
   "keywords": [],
   "author": "",
@@ -13,7 +17,11 @@
   "description": "",
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+    "@nomiclabs/hardhat-etherscan": "^3.1.8",
     "hardhat": "^2.22.8",
     "solidity-coverage": "^0.8.12"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5"
   }
 }
