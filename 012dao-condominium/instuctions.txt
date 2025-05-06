@@ -12,3 +12,19 @@ npx hardhat coverage
 
 Ao instalar o ambiente em uma nova maquina, devemos instalar o Visual C++
 https://ethereum.stackexchange.com/questions/161395/i-got-an-critical-error-when-i-deploy-my-contract-in-hardhat
+
+
+DAPP Condominium
+
+npm create vite@latest
+
+cd dapp
+
+npm install
+
+npm run dev
+
+
+npm i react-router-dom
+
+npm i ethers

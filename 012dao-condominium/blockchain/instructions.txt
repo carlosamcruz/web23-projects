@@ -45,3 +45,21 @@ npm i dotenv
 npm i -D @nomiclabs/hardhat-etherscan    
 
 npx hardhat verify --network sepolia 0x80e85F53abCEAFE44D887579a8eDF764caA36840
+
+
+******************Deploy em 06/05/2025
+
+PS C:\ts\web23-projects\012dao-condominium\blockchain> npm run deploy:bsc
+
+> 011crud-hardhat@1.0.0 deploy:bsc
+> npx hardhat run scripts/deploy.ts --network bsctest
+
+Compiled 4 Solidity files successfully (evm target: paris).
+Contract deployed to: 0x5fF8Db723F953fF1d70c5dDC17c8eFE93Adf5502
+CondominiumAdapter deployed to: 0x12A3E3E54836636Ea4C6B88a745046936781c41b
+CondominiumAdapter upgraded to: 0x5fF8Db723F953fF1d70c5dDC17c8eFE93Adf5502
+
+npx hardhat verify --network bsctest 0x12A3E3E54836636Ea4C6B88a745046936781c41b
+
+Successfully verified contract CondominiumAdapter on the block explorer.
+https://testnet.bscscan.com/address/0x12A3E3E54836636Ea4C6B88a745046936781c41b#code
