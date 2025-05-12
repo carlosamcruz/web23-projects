@@ -63,3 +63,25 @@ npx hardhat verify --network bsctest 0x12A3E3E54836636Ea4C6B88a745046936781c41b
 
 Successfully verified contract CondominiumAdapter on the block explorer.
 https://testnet.bscscan.com/address/0x12A3E3E54836636Ea4C6B88a745046936781c41b#code
+
+
+************************Deploy de 12/05/2025
+
+PS C:\ts\web23-projects\012dao-condominium\blockchain> npm run deploy:bsc
+
+> 011crud-hardhat@1.0.0 deploy:bsc
+> npx hardhat run scripts/deploy.ts --network bsctest
+
+Compiled 4 Solidity files successfully (evm target: paris).
+Contract deployed to: 0x79B7194194C0e0bE256CAeDdb3d7Bc4AE14d25C5
+CondominiumAdapter deployed to: 0xCFa4A1Bb46922371837D95516a68cBf0e13c325E
+CondominiumAdapter upgraded to: 0x79B7194194C0e0bE256CAeDdb3d7Bc4AE14d25C5
+
+npx hardhat verify --network bsctest 0xCFa4A1Bb46922371837D95516a68cBf0e13c325E
+
+Successfully submitted source code for contract
+contracts/CondominiumAdapter.sol:CondominiumAdapter at 0xCFa4A1Bb46922371837D95516a68cBf0e13c325E
+for verification on the block explorer. Waiting for verification result...
+
+Successfully verified contract CondominiumAdapter on the block explorer.
+https://testnet.bscscan.com/address/0xCFa4A1Bb46922371837D95516a68cBf0e13c325E#code

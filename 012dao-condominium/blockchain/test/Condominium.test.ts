@@ -1,4 +1,4 @@
-import { loadFixture } from "@nomicfoundation/hardhat-toolbox/network-helpers";
+import { loadFixture, time } from "@nomicfoundation/hardhat-toolbox/network-helpers";
 import { expect } from "chai";
 import hre, { ethers } from "hardhat";
 import { Bytecode } from "hardhat/internal/hardhat-network/stack-traces/model";
@@ -70,10 +70,28 @@ describe("Condominium", function () {
   it("Should add resident", async function () {
     const { contract, manager, resident } = await loadFixture(deployCondominiumFixture);
 
+
+    const newResident0 = await contract.getResident(resident.address);
+    console.log(newResident0);
+
+
     await contract.addResident(resident.address, 2102);
+
+    const newResident1 = await contract.getResident(resident.address);
+
+    console.log(newResident1);
+
+    await contract.addResident(manager.address, 2103);
+
+    const newResident2 = await contract.getResident(manager.address);
+
+    console.log(newResident2);
+
 
     expect(await contract.isResident(resident.address)).to.equal(true);
   });
+
+  
 
   it("Should NOT add resident (address = 0)", async function () {
     const { contract, manager, resident } = await loadFixture(deployCondominiumFixture);
@@ -98,10 +116,14 @@ describe("Condominium", function () {
       .to.be.revertedWith("This residence does not exist");
   });
 
+  
+
   it("Should remove resident (permission)", async function () {
     const { contract, manager, resident } = await loadFixture(deployCondominiumFixture);
 
     await contract.addResident(resident.address, 2102);
+    await contract.addResident(manager.address, 2102);
+
 
     expect(await contract.isResident(resident.address)).to.equal(true);
 
@@ -112,13 +134,30 @@ describe("Condominium", function () {
   });
 
   it("Should NOT remove resident (permission)", async function () {
-    const { contract, manager, resident } = await loadFixture(deployCondominiumFixture);
+    const { contract, manager, resident, accounts } = await loadFixture(deployCondominiumFixture);
 
     await contract.addResident(resident.address, 2102);
 
     expect(await contract.isResident(resident.address)).to.equal(true);
 
     const instance = contract.connect(resident);
+
+    await contract.addResident(manager.address, 2103);
+
+    await contract.setCounselor(resident.address, true);
+
+    await contract.setCounselor(manager.address, true);
+
+    await contract.addResident(accounts[2].address, 2104);
+
+    await contract.setCounselor(accounts[2].address, true);
+
+    await contract.addResident(accounts[3].address, 2202);
+
+    await contract.removeResident(accounts[3].address);
+    
+
+    //contract.removeResident(resident.address)
 
 
     await expect(instance.removeResident(resident.address))
@@ -127,19 +166,43 @@ describe("Condominium", function () {
   });
 
 
-  //it("Should NOT remove resident (counselor)", async function () {
-  it("Should remove resident (counselor)", async function () {
+  it("Should NOT remove resident (counselor)", async function () {
+  //it("Should remove resident (counselor)", async function () {
     const { contract, manager, resident } = await loadFixture(deployCondominiumFixture);
+
+    const instance = contract.connect(resident);
 
     await contract.addResident(resident.address, 2102);
 
+    await contract.addResident(manager.address, 2103);
+
+    await contract.setCounselor(manager.address, true);
     await contract.setCounselor(resident.address, true);
+    
+    await expect(instance.setCounselor(manager.address, false)).to.be.revertedWith("Only the manager can do this");
+
+    await contract.setCounselor(manager.address, false);
+
+    await expect(contract.setCounselor(manager.address, false)).to.be.revertedWith("Counselor not found");
+
+    const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
+
+    //const newAdd = new hre.ethers.Wallet("0x0000000000000000000000000000000000000000000000000000000000000000");
+
+    //console.log("new Add:", newAdd);
+
+    await expect(contract.setCounselor(ZERO_ADDRESS, true)).to.be.revertedWith("Invalid address");
+    await expect(contract.setCounselor(ZERO_ADDRESS, false)).to.be.revertedWith("Invalid address");
+    //await expect(contract.setCounselor(new hre.ethers.Wallet("0x0000000000000000000000000000000000000000000000000000000000000000"), true))
+    //.to.be.revertedWith("Invalid address");
 
     expect(await contract.isResident(resident.address)).to.equal(true);
 
-    await contract.removeResident(resident.address);
+    //await contract.removeResident(resident.address);
 
-    expect(await contract.isResident(resident.address)).to.equal(false);
+    await expect(contract.removeResident(resident.address)).to.be.revertedWith("A counselor cannot be removed");
+
+    //expect(await contract.isResident(resident.address)).to.equal(false);
   });
 
   it("Should set counselor", async function () {
@@ -153,7 +216,7 @@ describe("Condominium", function () {
 
     await instance.addResident(manager.address, 2103);
 
-    expect(await contract.counselors(resident.address)).to.equal(true);
+    expect((await contract.getResident(resident.address)).isCounselor).to.equal(true);
 
   });
 
@@ -172,7 +235,9 @@ describe("Condominium", function () {
     await contract.setCounselor(resident.address, true);
     await contract.setCounselor(resident.address, false);
 
-    expect(await contract.counselors(resident.address)).to.equal(false);
+    //expect(await contract.counselors(resident.address)).to.equal(false);
+    expect((await contract.getResident(resident.address)).isCounselor).to.equal(false);
+
 
   });
 
@@ -183,7 +248,7 @@ describe("Condominium", function () {
     await contract.addResident(resident.address, 2102);
 
     const instance = contract.connect(resident);
-
+  
     await expect(instance.setCounselor(resident.address, true))
       .to.be.revertedWith("Only the manager can do this");
 
@@ -234,13 +299,16 @@ describe("Condominium", function () {
 
   */
 
-  it("Should change manager", async function () {
+  
+  it("Should vote for changing manager", async function () {
     const { contract, manager, resident, accounts } = await loadFixture(deployCondominiumFixture);
       
     const instance = contract.connect(resident);
     //await contract.addResident(resident.address, 2102);
 
     await addResidents(contract, 15, accounts);
+
+    //await contract.removeResident(accounts[0]);
       
     await contract.addTopic("topic 1", "desciption 1", Category.CHANGE_MANAGER, 0, accounts[10].address);
     await contract.openVoting("topic 1");
@@ -255,6 +323,32 @@ describe("Condominium", function () {
 
     //expect(topic.status).to.equal(Status.APPROVED);
     expect(await contract.manager()).to.equal(accounts[10].address);
+
+  });
+
+  it("Should vote for changing manager (MANAGER NOT RESIDENT)", async function () {
+    const { contract, manager, resident, accounts } = await loadFixture(deployCondominiumFixture);
+      
+    const instance = contract.connect(resident);
+    //await contract.addResident(resident.address, 2102);
+
+    await addResidents(contract, 15, accounts);
+     
+    await contract.addTopic("topic 1", "desciption 1", Category.CHANGE_MANAGER, 0, accounts[0].address);
+    await contract.openVoting("topic 1");
+    //await contract.vote("topic 1", Options.YES);    
+    //await instance.vote("topic 1", Options.YES);
+    await addVotes(contract, 15, accounts, Options.YES);
+
+    await contract.removeResident(accounts[0]);
+
+
+    await contract.closeVoting("topic 1");
+
+    //const topic = await contract.getTopic("topic 1")
+
+    //expect(topic.status).to.equal(Status.APPROVED);
+    expect(await contract.manager()).to.equal(accounts[0].address);
 
   });
 
@@ -466,6 +560,7 @@ describe("Condominium", function () {
     const { contract, manager, resident } = await loadFixture(deployCondominiumFixture);
 
     await contract.addTopic("topic 1", "desciption 1", Category.DECISION, 0, manager.address);
+    await contract.addTopic("topic 2", "desciption 2", Category.DECISION, 0, manager.address);
 
     await contract.removeTopic("topic 1");
 
@@ -679,21 +774,39 @@ describe("Condominium", function () {
     await addVotes(contract, 4, accounts, Options.YES);
 
 
-    await expect(contract.closeVoting("topic 1"))
-      .to.be.revertedWith("You cannot finish a topic without the minimum number of votes");
+    await expect(contract.closeVoting("topic 1")).to.be.revertedWith("You cannot finish a topic without the minimum number of votes");
   }); 
 
   it("Should NOT close voting (permission)", async function () {
     const { contract, manager, resident } = await loadFixture(deployCondominiumFixture);
       
     const instance = contract.connect(resident);
+    const instance2 = contract.connect(manager);
+
     await contract.addResident(resident.address, 2102);
     await contract.payQuota(2102, {value: hre.ethers.parseEther("0.01")});    
+
+    await contract.addResident(manager.address, 2103);
+    await contract.payQuota(2103, {value: hre.ethers.parseEther("0.01")});    
       
     await contract.addTopic("topic 1", "desciption 1", Category.DECISION, 0, manager.address);
     await contract.openVoting("topic 1");
-    await contract.vote("topic 1", Options.YES);    
+    //await contract.vote("topic 1", Options.YES);    
+
+
+    console.log("Add manager: ", manager.address)
+    console.log("Add resident: ", resident.address)
+
+    console.log("Add I1: ", await instance.getAddress())
+    console.log("Add I2: ", await instance2.getAddress())
+
+
+    console.log("Add I1: ", await instance.getAddress())
+    console.log("Add I2: ", await instance2.getAddress())
+
     await instance.vote("topic 1", Options.YES);
+    await instance2.vote("topic 1", Options.YES);
+
 
     await expect(instance.closeVoting("topic 1"))
       .to.be.revertedWith("Only the manager can do this");
@@ -805,6 +918,55 @@ describe("Condominium", function () {
     
     await expect(instance.payQuota(2102, {value: hre.ethers.parseEther("0.01")}))
       .to.be.revertedWith("You cannot pay twice a month");
+  }); 
+
+
+  //Approach 1
+  /*
+  it("Should pay quota (inadimplent 2 months in the future)", async function () {
+    const { contract, manager, resident } = await loadFixture(deployCondominiumFixture);
+      
+    const instance = contract.connect(resident);
+    await contract.addResident(resident.address, 2102);
+    await instance.payQuota(2102, {value: hre.ethers.parseEther("0.01")});
+
+    // To set the timestamp 2 months in the future
+    const SECONDS_IN_MONTH = 31 * 24 * 60 * 60;
+
+    const latestBlock = await hre.ethers.provider.getBlock("latest");
+    if(latestBlock){
+
+      await hre.ethers.provider.send("evm_setNextBlockTimestamp", [latestBlock.timestamp + 2*SECONDS_IN_MONTH]);
+      await hre.ethers.provider.send("evm_mine", []);
+    }
+
+    await instance.payQuota(2102, {value: hre.ethers.parseEther("0.01")});
+
+    //await expect(instance.payQuota(2102, {value: hre.ethers.parseEther("0.01")}))
+    //  .to.be.revertedWith("You cannot pay twice a month");
+  }); 
+  */
+
+  //Approach 2
+  it("Should pay quota (inadimplent 2 months in the future)", async function () {
+    const { contract, manager, resident } = await loadFixture(deployCondominiumFixture);
+      
+    const instance = contract.connect(resident);
+    await contract.addResident(resident.address, 2102);
+    await instance.payQuota(2102, {value: hre.ethers.parseEther("0.01")});
+
+    console.log("ate aqui 1");
+    // To set the timestamp 2 months in the future
+    const SECONDS_IN_MONTH = 31 * 24 * 60 * 60;
+    //await time.setNextBlockTimestamp(`${Date.now()/1000 + SECONDS_IN_MONTH}`); 
+    await time.setNextBlockTimestamp(Math.floor(Date.now()/1000) + SECONDS_IN_MONTH); 
+    
+    console.log("ate aqui 2");
+
+    await instance.payQuota(2102, {value: hre.ethers.parseEther("0.01")});
+
+    //await expect(instance.payQuota(2102, {value: hre.ethers.parseEther("0.01")}))
+    //  .to.be.revertedWith("You cannot pay twice a month");
   }); 
 
 

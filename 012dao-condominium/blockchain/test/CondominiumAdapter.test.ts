@@ -5,6 +5,26 @@ import { Bytecode } from "hardhat/internal/hardhat-network/stack-traces/model";
 import {SignerWithAddress} from "@nomicfoundation/hardhat-ethers/signers"
 import { CondominiumAdapter } from "../typechain-types";
 
+function hexStringToUint8Array(hexString: string): Uint8Array {
+  // Ensure the hex string length is even
+  if (hexString.length % 2 !== 0) {
+      throw new Error("Hex string must have an even length");
+  }
+
+  // Convert the string into an array of bytes
+  const byteArray = new Uint8Array(hexString.length / 2);
+  for (let i = 0; i < byteArray.length; i++) {
+      const byte = hexString.substr(i * 2, 2);
+      byteArray[i] = parseInt(byte, 16);
+  }
+
+  return byteArray;
+}
+
+function stringToHex(str: string): string {
+  return Buffer.from(str, 'utf8').toString('hex');
+}
+
 describe("CondominiumAdapter", function () {
 
   enum Status{
@@ -76,6 +96,7 @@ describe("CondominiumAdapter", function () {
     expect(await contract.getAddress()).to.equal(address);
   });
 
+  
   it("Should NOT upgrade (permission)", async function () {
     const { adapter, manager, accounts } = await loadFixture(deployAdapterFixture);
     const { contract } = await loadFixture(deployImplementationFixture);
@@ -101,7 +122,52 @@ describe("CondominiumAdapter", function () {
     //await adapter.addResident(await accounts[1].getAddress(), 1301n)
     await adapter.addResident(accounts[1].address, 1301)
 
+    const resident = await adapter.getResident(accounts[1].address);
+
+    const residents = await adapter.getResidents(1, 2);
+
+    expect(resident.wallet).to.equal(accounts[1].address);
+
+    expect(residents.residents[0].wallet).to.equal(accounts[1].address);
+
     expect(await contract.isResident(accounts[1].address)).to.equal(true);
+  });
+
+
+  it("Should NOT get resident (UPGRADE)", async function () {
+    const { adapter, manager, accounts } = await loadFixture(deployAdapterFixture);
+    const { contract } = await loadFixture(deployImplementationFixture);
+
+    await expect(adapter.getResident(accounts[1].address)).to.be.revertedWith("You must upgrade first");
+  });
+
+  it("Should NOT get residents (UPGRADE)", async function () {
+    const { adapter, manager, accounts } = await loadFixture(deployAdapterFixture);
+    const { contract } = await loadFixture(deployImplementationFixture);
+
+    await expect(adapter.getResidents(1, 2)).to.be.revertedWith("You must upgrade first");
+  });
+
+
+  it("Should NOT get topic (UPGRADE)", async function () {
+    const { adapter, manager, accounts } = await loadFixture(deployAdapterFixture);
+    const { contract } = await loadFixture(deployImplementationFixture);
+
+    await expect(adapter.getTopic("topic 1")).to.be.revertedWith("You must upgrade first");
+  });
+
+  it("Should NOT get topics (UPGRADE)", async function () {
+    const { adapter, manager, accounts } = await loadFixture(deployAdapterFixture);
+    const { contract } = await loadFixture(deployImplementationFixture);
+
+    await expect(adapter.getTopics(1, 2)).to.be.revertedWith("You must upgrade first");
+  });
+
+  it("Should NOT get votes (UPGRADE)", async function () {
+    const { adapter, manager, accounts } = await loadFixture(deployAdapterFixture);
+    const { contract } = await loadFixture(deployImplementationFixture);
+
+    await expect(adapter.getVotes("topic 1")).to.be.revertedWith("You must upgrade first");
   });
 
   it("Should NOT add resident (upgraded)", async function () {
@@ -144,7 +210,7 @@ describe("CondominiumAdapter", function () {
 
     await adapter.setCounselor(accounts[1].address, true);
 
-    expect(await contract.counselors(accounts[1].address)).to.equal(true);
+    expect((await contract.getResident(accounts[1].address)).isCounselor).to.equal(true);
   });
 
   it("Should NOT set counselor (upgraded)", async function () {
@@ -161,6 +227,12 @@ describe("CondominiumAdapter", function () {
     await adapter.update(await contract.getAddress());
 
     await adapter.addTopic("topic 1", "description 1", Category.DECISION, 0, manager.address);
+
+    const topic = await adapter.getTopic("topic 1");
+    const topics = await adapter.getTopics(1, 2);
+
+    expect(topic.title).to.equal("topic 1");
+    expect(topics.topics[0].title).to.equal("topic 1");
 
     expect(await contract.topicExists("topic 1")).to.equal(true);
   });
@@ -250,6 +322,17 @@ describe("CondominiumAdapter", function () {
     await adapter.payQuota(1301, {value: hre.ethers.parseEther("0.01")});
 
     await instance.vote("topic 1", Options.YES);
+
+    const votes = await adapter.getVotes("topic 1");
+
+    const x = stringToHex("topic 1");
+
+    const y = hexStringToUint8Array(stringToHex("topic 1"));
+
+    hre.ethers.keccak256(y)
+
+    //expect(votes[hre.ethers.keccak256(hexStringToUint8Array(stringToHex("topic 1")))]).
+    expect(votes[0].resident).to.be.equal(accounts[1].address);
 
     expect(await contract.numberOfVotes("topic 1")).to.equal(1);
   });
