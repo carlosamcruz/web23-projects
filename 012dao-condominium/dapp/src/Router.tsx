@@ -40,6 +40,43 @@ function Router() {
 
     }
 
+    function CouncilRoute({children}: Props){
+
+        const isAuth = localStorage.getItem("account") !== null;
+
+        const isRresident = parseInt (localStorage.getItem("profile")  || "0") === Profile.RESIDENT;
+
+    
+        if(isAuth && !isRresident)
+            return ( children );
+        else{
+            doLogout();
+            return( <Navigate to = "/"/> );
+        }
+
+       // return( isAuth && isManager ? children : <Navigate to = "/"/>  )
+
+    }
+
+    function ResidentRoute({children}: Props){
+
+        const isAuth = localStorage.getItem("account") !== null;
+
+        const isRresident = parseInt (localStorage.getItem("profile")  || "0") === Profile.RESIDENT;
+
+    
+        if(isAuth && isRresident)
+            return ( children );
+        else{
+            doLogout();
+            return( <Navigate to = "/"/> );
+        }
+
+       // return( isAuth && isManager ? children : <Navigate to = "/"/>  )
+
+    }
+
+
 
     return (
         <BrowserRouter>

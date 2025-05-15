@@ -1,11 +1,16 @@
 import React from "react";
+import Sidebar from "../components/Sidebar";
 
 function Topics (){
 
     return(
-        <div>
-            Hello Topics
-        </div>
+        <>
+            <Sidebar />
+            <div>
+                Hello Topics
+            </div>
+        </>
+        
     );
 
 }

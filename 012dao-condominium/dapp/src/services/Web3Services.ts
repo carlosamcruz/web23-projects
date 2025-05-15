@@ -6,6 +6,8 @@ import { BrowserProvider } from "ethers";
 
 import ABI from './ABI.json';
 
+import { AbiType } from "./AbiType";
+
 //const ADAPTER_ADDRESS = `${process.env.VITE_ADAPTER_ADDRESS}`
 const ADAPTER_ADDRESS = `${import.meta.env.VITE_ADAPTER_ADDRESS}`
 
@@ -14,6 +16,9 @@ export enum Profile{
     COUNSELOR = 1,
     MANAGER = 2
 }
+
+const abi = ABI as AbiType;
+
 
 //function getProvider() : ethers.providers.Web3Provider {
 function getProvider() : BrowserProvider {
@@ -29,7 +34,8 @@ function getContract(provider?: BrowserProvider): ethers.Contract {
     if(!provider) 
         provider = getProvider();
 
-    return new ethers.Contract(ADAPTER_ADDRESS, ABI, provider);
+    //return new ethers.Contract(ADAPTER_ADDRESS, ABI as AbiType, provider);
+    return new ethers.Contract(ADAPTER_ADDRESS, abi, provider);
 }
 
 
@@ -37,6 +43,14 @@ function getContract(provider?: BrowserProvider): ethers.Contract {
 export type LoginResult = {
     account: string,
     profile: Profile;
+}
+
+export type Resident = {
+    wallet: string;
+    isCounselor: boolean;
+    isManager: boolean;
+    residence: number;
+    nextPayment: ethers.BigNumberish;
 }
 
 export async function doLogin(): Promise <LoginResult>{
@@ -49,21 +63,37 @@ export async function doLogin(): Promise <LoginResult>{
 
 
     const contract = getContract(provider);
-    
-    const manager = ((await contract.getManager()) as string).toLocaleLowerCase();
 
-    console.log("Manager: ", manager)
-
-    const isManager = manager === accounts[0];
+    const resident = (await contract.getResident(accounts[0])) as Resident;
 
     
+    //const manager = ((await contract.getManager()) as string).toLocaleLowerCase();
+
+    //console.log("Manager: ", manager)
+
+    //const isManager = manager === accounts[0];
+
+    let isManager = resident.isManager;
+
+    if(!isManager && resident.residence > 0){
+        if(resident.isCounselor)
+            localStorage.setItem("profile", `${Profile.COUNSELOR}`);
+        else
+            localStorage.setItem("profile", `${Profile.RESIDENT}`);
+    }
+    else if((!isManager && !resident.residence)){
+        const manager = ((await contract.getManager()) as string).toLocaleLowerCase();
+        
+        isManager = manager === accounts[0];
+    }
+
     if(isManager)
         localStorage.setItem("profile", `${Profile.MANAGER}`);
-    else 
-        localStorage.setItem("profile", `${Profile.RESIDENT}`);
+    else if(localStorage.getItem("profile") === null)
+        throw new Error("Unauthorized");
+
 
     localStorage.setItem("account", accounts[0]);
-
     
     return {
         
