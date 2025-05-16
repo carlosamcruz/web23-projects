@@ -2,6 +2,7 @@ import { Route, BrowserRouter, Routes, Navigate } from 'react-router-dom';
 import Login from './pages/Login';
 import Topics from './pages/Topics';
 import Transfer from './pages/Transfer';
+import Settings from './pages/Settings';
 import { JSX } from 'react';
 import { Profile, doLogout } from './services/Web3Services';
 
@@ -77,7 +78,6 @@ function Router() {
     }
 
 
-
     return (
         <BrowserRouter>
             <Routes>
@@ -90,6 +90,11 @@ function Router() {
                 <Route path="/transfer" element={
                     <ManagerRoute>
                         <Transfer/>
+                    </ManagerRoute>
+                }/>
+                <Route path="/settings" element={
+                    <ManagerRoute>
+                        <Settings/>
                     </ManagerRoute>
                 }/>
             </Routes>
