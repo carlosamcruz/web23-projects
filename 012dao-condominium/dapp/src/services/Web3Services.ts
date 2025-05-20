@@ -1,4 +1,4 @@
-import { ethers } from "ethers";
+import { Contract, ethers, BaseContract } from "ethers";
 
 //import { Web3Provider } from "@ethersproject/providers";
 
@@ -17,8 +17,18 @@ export enum Profile{
     MANAGER = 2
 }
 
-const abi = ABI as AbiType;
+//const abi = (ABI as AbiType) as ethers.InterfaceAbi;
 
+const abi = ABI as ethers.InterfaceAbi;
+
+
+function getProfile() : Profile{
+
+    const profile = localStorage.getItem("profile") || "0";
+
+    return parseInt(profile);
+
+}
 
 //function getProvider() : ethers.providers.Web3Provider {
 function getProvider() : BrowserProvider {
@@ -38,6 +48,22 @@ function getContract(provider?: BrowserProvider): ethers.Contract {
     return new ethers.Contract(ADAPTER_ADDRESS, abi, provider);
 }
 
+async function getContractSigner(provider?: BrowserProvider): Promise <ethers.Contract> {
+    
+    if(!provider) 
+        provider = getProvider();
+
+    const signer = await provider.getSigner(localStorage.getItem("account") || undefined);
+
+    //const contract = new ethers.Contract(ADAPTER_ADDRESS, abi as ethers.InterfaceAbi, provider);
+
+    //Com o ethers não se usa mais o connect signer, mas como feito abaixo:
+    const contract = new ethers.Contract(ADAPTER_ADDRESS, abi, signer);
+
+    //return new ethers.Contract(ADAPTER_ADDRESS, ABI as AbiType, provider);
+    //return contract.connect(signer) as ethers.Contract;
+    return contract;
+}
 
 
 export type LoginResult = {
@@ -108,4 +134,23 @@ export async function doLogin(): Promise <LoginResult>{
 export function doLogout(){
     localStorage.removeItem("account");
     localStorage.removeItem("profile");
+}
+
+export async function getAddress() : Promise<string>{
+
+    const contract = getContract();
+
+    return (await contract.getAddressImplementation() as string);
+}
+
+export async function upgrade(address: string) : Promise<ethers.Transaction>{
+
+    if(getProfile() !== Profile.MANAGER)
+        throw new Error("You do not have permission.");
+        
+    const contract = await getContractSigner();
+
+    const tx = await contract.update(address);
+
+    return (tx);
 }

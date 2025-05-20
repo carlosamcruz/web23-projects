@@ -1,5 +1,7 @@
 import Sidebar from "../components/Sidebar";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { getAddress, upgrade } from "../services/Web3Services";
+import Footer from "../components/Footer";
 
 const ADAPTER_ADDRESS = `${import.meta.env.VITE_ADAPTER_ADDRESS}`
 
@@ -8,10 +10,34 @@ function Settings(){
 
     const [contract, setContract] = useState<string>("");
     const [message, setMessage] = useState<string>("");
+    const [isLoading, setIsLoading] = useState<boolean>(false);
+
+    useEffect(()=>{
+        setIsLoading(true);
+        getAddress()
+            .then(address => {
+                setContract(address);
+                setIsLoading(false);
+            })
+            .catch(err => {
+                setMessage(err.message);
+                setIsLoading(false);
+            });
+
+    },[]);
 
 
-    function btnSaveClick(){
-        setMessage(contract);
+    async function btnSaveClick(){
+        setMessage("Saving data ... wait ..." + contract);
+        await upgrade(contract)
+            .then(tx => {
+                setMessage("Transaction sent, it may take some minutes to take effect: " + tx.hash);
+            })
+            .catch(err => {
+                setMessage(err.message);
+
+            });
+
     }
 
     return(
@@ -31,6 +57,21 @@ function Settings(){
                         </div>
                         </div>
                         <div className="card-body px-0 pb-2">
+                            {
+                                isLoading
+                                ?(
+                                    <div className="row ms-3">
+                                        <div className="col-md-6 mb-3">
+                                          <p> 
+                                            <i className="material-icons opacity-10 me-2">hourglass_empty</i>
+                                            Loading...
+                                          </p>
+                                        </div>
+                                    </div>
+                                )
+                                :
+                                <></>
+                            }
                             <div className="row ms-3">
                                 <div className="col-md-6 mb-3">
                                     <div className="form-group">
@@ -66,40 +107,9 @@ function Settings(){
                             </div>                            
                         </div>
                     </div>
+                    <Footer/>
                     </div>
                 </div>
-                <footer className="footer py-4  ">
-                    <div className="container-fluid">
-                    <div className="row align-items-center justify-content-lg-between">
-                        <div className="col-lg-6 mb-lg-0 mb-4">
-                        <div className="copyright text-center text-sm text-muted text-lg-start">
-                            © <script>
-                            document.write(new Date().getFullYear())
-                            </script>,
-                            made with <i className="fa fa-heart"></i> by
-                            <a href="https://www.creative-tim.com" className="font-weight-bold" target="_blank">Creative Tim</a>
-                            for a better web.
-                        </div>
-                        </div>
-                        <div className="col-lg-6">
-                        <ul className="nav nav-footer justify-content-center justify-content-lg-end">
-                            <li className="nav-item">
-                            <a href="https://www.creative-tim.com" className="nav-link text-muted" target="_blank">Creative Tim</a>
-                            </li>
-                            <li className="nav-item">
-                            <a href="https://www.creative-tim.com/presentation" className="nav-link text-muted" target="_blank">About Us</a>
-                            </li>
-                            <li className="nav-item">
-                            <a href="https://www.creative-tim.com/blog" className="nav-link text-muted" target="_blank">Blog</a>
-                            </li>
-                            <li className="nav-item">
-                            <a href="https://www.creative-tim.com/license" className="nav-link pe-0 text-muted" target="_blank">License</a>
-                            </li>
-                        </ul>
-                        </div>
-                    </div>
-                    </div>
-                </footer>
                 </div>
             </main>
 
