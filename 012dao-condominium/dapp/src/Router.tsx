@@ -5,6 +5,8 @@ import Transfer from './pages/Transfer';
 import Settings from './pages/Settings';
 import { JSX } from 'react';
 import { Profile, doLogout } from './services/Web3Services';
+import Residents from './pages/residentes';
+import ResidentPage from './pages/residentes/ResidentPage';
 
 function Router() {
 
@@ -95,7 +97,17 @@ function Router() {
                 <Route path="/settings" element={
                     <ManagerRoute>
                         <Settings/>
-                    </ManagerRoute>
+                    </ManagerRoute>    
+                }/>
+                <Route path="/residents/new" element={
+                    <CouncilRoute>
+                        <ResidentPage/>
+                    </CouncilRoute>    
+                }/>
+                <Route path="/residents" element={
+                    <CouncilRoute>
+                        <Residents/>
+                    </CouncilRoute>    
                 }/>
             </Routes>
         </BrowserRouter>
