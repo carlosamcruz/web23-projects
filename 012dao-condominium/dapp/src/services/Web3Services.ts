@@ -79,6 +79,10 @@ export type Resident = {
     nextPayment: ethers.BigNumberish;
 }
 
+export function isManager() : boolean{
+    return parseInt(localStorage.getItem("profile") || "0") === Profile.MANAGER
+}
+
 export async function doLogin(): Promise <LoginResult>{
     const provider = getProvider();
 
@@ -151,6 +155,18 @@ export async function upgrade(address: string) : Promise<ethers.Transaction>{
     const contract = await getContractSigner();
 
     const tx = await contract.update(address);
+
+    return (tx);
+}
+
+export async function addResident(wallet: string, residenceId: number) : Promise<ethers.Transaction>{
+
+    if(getProfile() === Profile.RESIDENT)
+        throw new Error("You do not have permission.");
+        
+    const contract = await getContractSigner();
+
+    const tx = await contract.addResident(wallet, residenceId);
 
     return (tx);
 }

@@ -1,8 +1,36 @@
-
+import { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import Footer from "../../components/Footer";
 import Sidebar from "../../components/Sidebar";
+import Alert from "../../components/Alert";
 
 function Residents(){
+
+    const [message, setMessage] = useState<string>("");
+    const [error, setError] = useState<string>("");
+
+    function useQuery(){
+        return new URLSearchParams(useLocation().search);
+    }
+
+    const query = useQuery();
+
+    useEffect(()=>{
+
+        const tx = query.get("tx");
+
+        console.log("TX:" + tx)
+
+        if(tx){
+
+            console.log("TX2:" + tx)
+
+            setMessage("Your transaction is being processed. It may take some minutes to take effect.");
+        }
+
+
+
+    }, []);
 
     return(
         <>
@@ -21,6 +49,22 @@ function Residents(){
                         </div>
                         </div>
                         <div className="card-body px-0 pb-2">
+                            {
+                                message
+                                ?
+                                    <Alert alertClass="alert-success" materialIcon="thumb_up_off_alt" title="Success!" text={message}/>
+                                :
+                                    <></>
+
+                            }
+                            {
+                                error
+                                ?
+                                    <Alert alertClass="alert-danger" materialIcon="error" title="Error!" text={error}/>
+                                :
+                                    <></>
+
+                            }
                             <div className="table-responsive p-0">
                                 <table className="table align-items-center mb-0">
                                 <thead>
@@ -204,6 +248,7 @@ function Residents(){
                                 </tbody>
                                 </table>
                             </div>
+                            
                             <div className="row ms-3">
                                 <div className="col-md-12 mb-3">
                                     <a className="btn bg-gradient-dark me-2" href="/residents/new" >
@@ -211,7 +256,8 @@ function Residents(){
                                         Add New Resident
                                     </a>
                                 </div>
-                            </div>    
+                            </div>
+
                         </div>
                     </div>
                     </div>

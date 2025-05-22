@@ -13,7 +13,7 @@ function Login () {
 
     doLogin()
       .then(result =>{
-        console.log(result); 
+        console.log("Login:" + result); 
         navigate("/topics");
       }
       )
