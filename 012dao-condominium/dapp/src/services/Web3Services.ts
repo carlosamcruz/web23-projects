@@ -79,6 +79,11 @@ export type Resident = {
     nextPayment: ethers.BigNumberish;
 }
 
+export type ResidentPage = {
+    residents: Resident[];
+    total: number;
+}
+
 export function isManager() : boolean{
     return parseInt(localStorage.getItem("profile") || "0") === Profile.MANAGER
 }
@@ -145,6 +150,43 @@ export async function getAddress() : Promise<string>{
     const contract = getContract();
 
     return (await contract.getAddressImplementation() as string);
+}
+
+export async function getResidents(page: number = 1, pageSize: number = 10) : Promise<ResidentPage>{
+
+    const contract = getContract();
+    
+    const result = await contract.getResidents(page, pageSize) as ResidentPage;
+
+    //console.log("Result: " + result);
+    console.log("Result: ", result);
+    console.log("Result: "+ result);
+    console.log("Res0: " + (result.residents[0].residence > 0));
+
+    
+    const residents = Array.from(result.residents)
+    //result.residents
+    .filter(r => r.residence > 0) as Resident[];
+
+    //console.log("Residents Before sort:", residents);
+
+    
+    residents.sort((a, b) => {
+        if (a.residence > b.residence) return 1;
+        if (a.residence < b.residence) return -1;
+        return 0;
+    });
+    
+
+    console.log("Residents:" + residents);
+    console.log("Residents:", residents);
+
+
+    return {
+        residents,
+        total: result.total
+
+    } as ResidentPage;
 }
 
 export async function upgrade(address: string) : Promise<ethers.Transaction>{
