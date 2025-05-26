@@ -170,7 +170,6 @@ export async function getResidents(page: number = 1, pageSize: number = 10) : Pr
 
     //console.log("Residents Before sort:", residents);
 
-    
     residents.sort((a, b) => {
         if (a.residence > b.residence) return 1;
         if (a.residence < b.residence) return -1;
@@ -211,4 +210,14 @@ export async function addResident(wallet: string, residenceId: number) : Promise
     const tx = await contract.addResident(wallet, residenceId);
 
     return (tx);
+}
+
+export async function removeResident(wallet: string) : Promise<ethers.Transaction>{
+
+    if(getProfile() !== Profile.MANAGER)
+        throw new Error("You do not have permission.");
+        
+    const contract = await getContractSigner();
+
+    return (await contract.removeResident(wallet));
 }

@@ -58,7 +58,7 @@ function ResidentRow(props: Props){
                         <a href={"/residents/edit/" + props.data.wallet} className="btn btn-info btn-sm me-1">
                             <i className="material-icons text-sm">edit</i>
                         </a>
-                        <a href={"#" + props.data.wallet} className="btn btn-dnager btn-sm me-1" onClick={btnDeleteClick}>
+                        <a href={"#" + props.data.wallet} className="btn btn-danger btn-sm me-1" onClick={btnDeleteClick}>
                             <i className="material-icons text-sm">delete</i>
                         </a>
 

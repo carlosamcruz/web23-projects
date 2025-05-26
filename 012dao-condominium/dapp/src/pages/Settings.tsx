@@ -2,6 +2,7 @@ import Sidebar from "../components/Sidebar";
 import { useState, useEffect } from "react";
 import { getAddress, upgrade } from "../services/Web3Services";
 import Footer from "../components/Footer";
+import Loader from "../components/Loader";
 
 const ADAPTER_ADDRESS = `${import.meta.env.VITE_ADAPTER_ADDRESS}`
 
@@ -59,18 +60,8 @@ function Settings(){
                         <div className="card-body px-0 pb-2">
                             {
                                 isLoading
-                                ?(
-                                    <div className="row ms-3">
-                                        <div className="col-md-6 mb-3">
-                                          <p> 
-                                            <i className="material-icons opacity-10 me-2">hourglass_empty</i>
-                                            Loading...
-                                          </p>
-                                        </div>
-                                    </div>
-                                )
-                                :
-                                <></>
+                                ? <Loader/>
+                                : <></>
                             }
                             <div className="row ms-3">
                                 <div className="col-md-6 mb-3">
