@@ -122,7 +122,7 @@ function Residents(){
                                     {
                                         residents && residents.length
                                         ?
-                                            residents.map(resident => <ResidentRow data = {resident} onDelete={() => onDeleteResident(resident.wallet)}/>)                                  
+                                            residents.map(resident => <ResidentRow key={resident.wallet} data = {resident} onDelete={() => onDeleteResident(resident.wallet)}/>)                                  
                                         :
                                         <></>
                                     }

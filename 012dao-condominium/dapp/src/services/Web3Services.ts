@@ -85,7 +85,10 @@ export type ResidentPage = {
 }
 
 export function isManager() : boolean{
-    return parseInt(localStorage.getItem("profile") || "0") === Profile.MANAGER
+    return parseInt(localStorage.getItem("profile") || "0") === Profile.MANAGER;
+}
+export function isResident() : boolean{
+    return parseInt(localStorage.getItem("profile") || "0") === Profile.RESIDENT;
 }
 
 export async function doLogin(): Promise <LoginResult>{
@@ -188,6 +191,25 @@ export async function getResidents(page: number = 1, pageSize: number = 10) : Pr
     } as ResidentPage;
 }
 
+export async function getResident(wallet: string) : Promise<Resident>{
+
+    const contract = getContract();
+    
+    const result = await contract.getResident(wallet) as Resident;
+
+    //transformação do Proxy entregue pelo ethers v6 em um objeto real com os campos nomeados
+    const parsedResident: Resident = {
+        wallet: result.wallet,
+        residence: result.residence,
+        isCounselor: result.isCounselor,
+        isManager: result.isManager,
+        nextPayment: result.nextPayment,
+    };
+
+    return parsedResident;
+}
+
+
 export async function upgrade(address: string) : Promise<ethers.Transaction>{
 
     if(getProfile() !== Profile.MANAGER)
@@ -220,4 +242,14 @@ export async function removeResident(wallet: string) : Promise<ethers.Transactio
     const contract = await getContractSigner();
 
     return (await contract.removeResident(wallet));
+}
+
+export async function setCounselor(wallet: string, isEntering: boolean) : Promise<ethers.Transaction>{
+
+    if(getProfile() !== Profile.MANAGER)
+        throw new Error("You do not have permission.");
+        
+    const contract = await getContractSigner();
+
+    return (await contract.setCounselor(wallet, isEntering));
 }
