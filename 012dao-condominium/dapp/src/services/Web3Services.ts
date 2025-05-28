@@ -157,14 +157,17 @@ export async function getAddress() : Promise<string>{
 
 export async function getResidents(page: number = 1, pageSize: number = 10) : Promise<ResidentPage>{
 
+    console.log("page get: ", page);
+    console.log("pageSize get: ", pageSize);
+
     const contract = getContract();
     
     const result = await contract.getResidents(page, pageSize) as ResidentPage;
 
     //console.log("Result: " + result);
-    console.log("Result: ", result);
-    console.log("Result: "+ result);
-    console.log("Res0: " + (result.residents[0].residence > 0));
+    //console.log("Result: ", result);
+    //console.log("Result: "+ result);
+    //console.log("Res0: " + (result.residents[0].residence > 0));
 
     
     const residents = Array.from(result.residents)
@@ -180,13 +183,13 @@ export async function getResidents(page: number = 1, pageSize: number = 10) : Pr
     });
     
 
-    console.log("Residents:" + residents);
-    console.log("Residents:", residents);
+    //console.log("Residents:" + residents);
+    //console.log("Residents:", residents);
 
 
     return {
         residents,
-        total: result.total
+        total: Number(result.total)
 
     } as ResidentPage;
 }

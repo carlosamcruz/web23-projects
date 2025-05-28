@@ -6,15 +6,19 @@ import Alert from "../../components/Alert";
 import ResidentRow from "./ResidentRow";
 import { Resident, getResidents, removeResident } from "../../services/Web3Services";
 import Loader from "../../components/Loader";
+import Pagination from "../../components/Pagination";
 
 function Residents(){
 
     const navigate = useNavigate();
 
+    const pageSize = 10;
+
     const [residents, setResidents] = useState<Resident[]>([]);
     const [message, setMessage] = useState<string>("");
     const [error, setError] = useState<string>("");
     const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [count, setCount] = useState<number>(0);
 
     function useQuery(){
         return new URLSearchParams(useLocation().search);
@@ -24,10 +28,24 @@ function Residents(){
 
     useEffect(()=>{
 
+        pageLoad();
+
+    }, []);
+
+    //Para ser ativado quando o link da url mudar
+    useEffect(()=>{
+
+        pageLoad();
+
+    }, [parseInt(query.get("page") || "1")]);
+
+    function pageLoad(){
         setIsLoading(true)
-        getResidents()
+        getResidents(parseInt(query.get("page") || "1"), pageSize)
             .then(result =>{
                 setResidents(result.residents);
+                setCount(result.total)
+                console.log("result.total", result.total)
                 setIsLoading(false);
             } )
             .catch(err => {
@@ -45,10 +63,7 @@ function Residents(){
 
             setMessage("Your transaction is being processed. It may take some minutes to take effect.");
         }
-
-
-
-    }, []);
+    }
 
     function onDeleteResident(wallet: string){
 
@@ -129,9 +144,12 @@ function Residents(){
 
                                 </tbody>
                                 </table>
+                                
+                                <Pagination count={count} pageSize={pageSize}/>
+                        
                             </div>
                             
-                            <div className="row ms-3">
+                            <div className="row ms-2">
                                 <div className="col-md-12 mb-3">
                                     <a className="btn bg-gradient-dark me-2" href="/residents/new" >
                                         <i className="material-icons opacity-10 me-2">add</i>
