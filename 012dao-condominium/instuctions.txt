@@ -28,3 +28,16 @@ npm run dev
 npm i react-router-dom
 
 npm i ethers
+
+**************BACK END
+md backend
+cd backend
+
+npm init -y
+
+npm i express dotenv ethers express-async-errors helmet morgan
+npm i cors
+
+npm i -D typescript ts-node @types/express @types/cors @types/morgan 
+
+npx tsc --init
