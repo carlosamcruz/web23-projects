@@ -41,3 +41,21 @@ npm i cors
 npm i -D typescript ts-node @types/express @types/cors @types/morgan 
 
 npx tsc --init
+
+--------------------------------------------------
+instalção do MongoDB
+
+execução 
+Lenvantar o servidor e deixar rodando:
+
+dentro da pasta
+mongod --dbpath C:\mongodb-win32-x86_64-windows-8.0.9\bin\data
+
+de qualquer lugar
+c:\mongodb-win32-x86_64-windows-8.0.9\bin\mongod --dbpath C:\mongodb-win32-x86_64-windows-8.0.9\bin\data
+
+npm i mongodb
+
+
+run the backend:
+    npm run dev

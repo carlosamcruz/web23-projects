@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    
     "dev": "npx nodemon ./src/server.ts --watch './src/' -e ts",
     "compile": "npx tsc",
     "start": "node ./dist/server.js"
@@ -19,6 +18,7 @@
     "express": "^4.21.2",
     "express-async-errors": "^3.1.1",
     "helmet": "^8.1.0",
+    "mongodb": "^6.16.0",
     "morgan": "^1.10.0"
   },
   "devDependencies": {
