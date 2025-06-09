@@ -59,3 +59,17 @@ npm i mongodb
 
 run the backend:
     npm run dev
+
+------------------------------------------------------------
+
+FrontEnd
+
+npm i axios
+
+npm i -D @types/axios
+
+------------------------------------------------------------
+
+backend
+    npm i jsonwebtoken
+    npm i -D @types/jsonwebtoken

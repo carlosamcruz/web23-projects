@@ -6,6 +6,7 @@ import cors from "cors";
 import helmet from "helmet";
 import errorMiddleware from "./middlewares/errorMiddleware";
 import residentRouter from "./routers/residentRouter"
+import authController from "./controllers/authController";
 
 const app = express();
 app.use(morgan("tiny"));
@@ -16,6 +17,12 @@ app.use(cors({
 
 app.use(express.json());
 
+app.post('/login/', (req: Request, res: Response, next: NextFunction) =>
+    {
+        void authController.doLogin(req, res, next)
+    }
+);
+    
 app.use('/residents/', residentRouter);
 
 app.use('/', (req: Request, res: Response, next: NextFunction) => {

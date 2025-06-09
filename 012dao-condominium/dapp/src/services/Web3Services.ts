@@ -3,6 +3,7 @@ import { Contract, ethers, BaseContract } from "ethers";
 //import { Web3Provider } from "@ethersproject/providers";
 
 import { BrowserProvider } from "ethers";
+import { doApiLogin } from "./ApiService";
 
 import ABI from './ABI.json';
 
@@ -69,6 +70,7 @@ async function getContractSigner(provider?: BrowserProvider): Promise <ethers.Co
 export type LoginResult = {
     account: string,
     profile: Profile;
+    token: string;
 }
 
 export type Resident = {
@@ -132,11 +134,29 @@ export async function doLogin(): Promise <LoginResult>{
 
 
     localStorage.setItem("account", accounts[0]);
+
+    //Assinatura da carteira:
+    const signer = await provider.getSigner();
+    const timeStamp = Date.now();
+    const message = `Authenticating to Condominium. Timestamp ${timeStamp}`;
+    
+    const secret = await signer.signMessage(message);
+
+    console.log("Secret: ", secret);
+
+    const token = await doApiLogin(accounts[0], secret, timeStamp);
+
+    localStorage.setItem("token", token);
+
+    //enviar secret para o backend
+    //pegar token do backend
+    /////////////////////////////
     
     return {
         
         account: accounts[0],
-        profile: parseInt(localStorage.getItem("profile") || "0")
+        profile: parseInt(localStorage.getItem("profile") || "0"),
+        token: token
 
     } as LoginResult;
     
